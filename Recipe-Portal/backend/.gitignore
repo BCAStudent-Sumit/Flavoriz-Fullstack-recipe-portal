@@ -1,0 +1,13 @@
+# dependencies
+node_modules/
+
+# uploaded recipe images
+uploads/
+
+# environment secrets — never commit these
+.env
+.env.local
+
+# logs
+*.log
+npm-debug.log*

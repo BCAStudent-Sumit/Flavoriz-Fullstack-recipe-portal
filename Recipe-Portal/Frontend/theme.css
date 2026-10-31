@@ -1,0 +1,728 @@
+/* ============================================================
+   theme.css — Flavoriz shared theme system
+   Loaded LAST on every page so its rules win by source order.
+   Provides: light/dark design tokens, dark-mode overrides for
+   hard-coded colours, the floating theme toggle, skeleton
+   loaders, focus states, and shared component polish.
+   ============================================================ */
+
+/* ---------- Design tokens: LIGHT (default) ---------- */
+:root {
+  --bg-color: #fdf6ec;        /* page background (warm cream) */
+  --surface: #ffffff;         /* cards, navbar, panels        */
+  --surface-2: #f5efe3;       /* stat boxes, subtle fills     */
+  --input-bg: #f1ede4;        /* form fields                  */
+  --input-bg-focus: #ffffff;
+
+  --text: #1a1a1a;            /* primary text                 */
+  --text-muted: #6b7c7c;      /* secondary text               */
+  --heading: #1a5653;         /* teal headings                */
+
+  --border: #e7ddcd;          /* card / input borders         */
+  --border-soft: #ececec;     /* list dividers                */
+
+  --primary-color: #e8552f;   /* brand coral                  */
+  --primary-hover: #cf4520;
+  --secondary-color: #1a5653; /* brand teal                   */
+  --dark-color: #1a1a1a;      /* legacy alias (== --text)     */
+
+  --shadow: rgba(26, 40, 40, 0.08);
+  --shadow-lg: rgba(26, 40, 40, 0.16);
+  --ring: rgba(232, 85, 47, 0.45);
+
+  --radius: 12px;
+  --radius-lg: 20px;
+
+  /* assistant */
+  --assist-bg: #ffffff;
+  --assist-user: #e8552f;
+  --assist-user-text: #ffffff;
+  --assist-bot: #f3ede3;
+  --assist-bot-text: #23201c;
+
+  color-scheme: light;
+}
+
+/* ---------- Design tokens: DARK ---------- */
+html[data-theme="dark"] {
+  --bg-color: #17130f;
+  --surface: #221d18;
+  --surface-2: #2c2620;
+  --input-bg: #2c2620;
+  --input-bg-focus: #342d26;
+
+  --text: #f3ece2;
+  --text-muted: #a99f90;
+  --heading: #7ad0c5;
+
+  --border: #3a322b;
+  --border-soft: #332b25;
+
+  --primary-color: #ff6a41;
+  --primary-hover: #ff835f;
+  --secondary-color: #62c2b8;
+  --dark-color: #f3ece2;
+
+  --shadow: rgba(0, 0, 0, 0.45);
+  --shadow-lg: rgba(0, 0, 0, 0.6);
+  --ring: rgba(255, 106, 65, 0.55);
+
+  /* assistant */
+  --assist-bg: #221d18;
+  --assist-user: #ff6a41;
+  --assist-user-text: #1a1206;
+  --assist-bot: #2c2620;
+  --assist-bot-text: #f0e8dd;
+
+  color-scheme: dark;
+}
+
+/* Smooth colour transition only while toggling (and only if the
+   user hasn't asked for reduced motion). */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-anim,
+  html.theme-anim *:not(.no-theme-anim) {
+    transition: background-color .35s ease, color .35s ease,
+                border-color .35s ease, box-shadow .35s ease !important;
+  }
+}
+
+/* ============================================================
+   Route hard-coded colours through the tokens (both themes).
+   These win over the originals because theme.css loads last.
+   ============================================================ */
+body { background: var(--bg-color); color: var(--text); }
+
+.navbar { background: var(--surface); box-shadow: 0 2px 10px var(--shadow); }
+.nav-links a { color: var(--text); }
+.nav-links a:hover, .nav-links a.active { color: var(--primary-color); }
+.nav-links button { border: 1px solid var(--border); color: var(--text); background: transparent; }
+
+.recipe-card { background: var(--surface); box-shadow: 0 2px 10px var(--shadow); }
+.recipe-card:hover { box-shadow: 0 14px 28px var(--shadow-lg); }
+.recipe-author, .empty-state { color: var(--text-muted); }
+.heading-duo { color: var(--heading); }
+
+.dropdown-menu { background: var(--surface); box-shadow: 0 14px 34px var(--shadow-lg); }
+.dropdown-column h4 { color: var(--secondary-color); }
+.dropdown-column a { color: var(--text); }
+.dropdown-column a:hover { color: var(--primary-color); }
+
+/* Recipe detail */
+.info-box { background: var(--surface); box-shadow: 0 2px 10px var(--shadow); }
+.info-box h3 { color: var(--heading); border-bottom-color: var(--border); }
+.recipe-title { color: var(--heading); }
+.recipe-author-row { color: var(--text-muted); }
+.stat-box { background: var(--surface-2); }
+.stat-box .stat-label { color: var(--text-muted); }
+.stat-box .stat-value { color: var(--text); }
+.ingredient-item { border-bottom-color: var(--border-soft); }
+.ingredient-item.checked span { color: var(--text-muted); }
+.instruction-step { border-bottom-color: var(--border-soft); }
+.step-text { color: var(--text); }
+.back-link { color: var(--secondary-color); }
+.back-link:hover { color: var(--primary-color); }
+
+/* Forms */
+.form-card { background: var(--surface); box-shadow: 0 6px 18px var(--shadow); }
+.form-subtext { color: var(--text-muted); }
+.form-card label { color: var(--text); }
+.form-card input, .form-card textarea {
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+}
+.form-card input::placeholder, .form-card textarea::placeholder,
+.auth-box input::placeholder { color: var(--text-muted); opacity: .8; }
+.image-upload-box { border-color: var(--border); }
+#uploadPlaceholder p { color: var(--text-muted); }
+
+/* Auth pages */
+.auth-wrapper { background: var(--surface); }
+.auth-form-side { background: var(--bg-color); }
+.auth-box h2 { color: var(--heading); }
+.auth-subtext { color: var(--text-muted); }
+.auth-box label { color: var(--text); }
+.auth-box input { background: var(--input-bg); color: var(--text); }
+.auth-box input:focus { background: var(--input-bg-focus); }
+
+/* Profile */
+.profile-header { background: var(--surface); box-shadow: 0 2px 10px var(--shadow); }
+.profile-stats span { color: var(--text-muted); }
+.section-title { color: var(--heading); }
+
+/* Autofill in dark mode */
+html[data-theme="dark"] input:-webkit-autofill,
+html[data-theme="dark"] input:-webkit-autofill:hover,
+html[data-theme="dark"] input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+  -webkit-text-fill-color: var(--text) !important;
+}
+
+/* ============================================================
+   Landing page — dark mode only (light stays exactly as-is).
+   Overrides landing.css's own variables + a few translucent bits.
+   ============================================================ */
+html[data-theme="dark"] {
+  --bg-cream: #17130f;
+  --text-dark: #f3ece2;
+  --brand-teal: #62c2b8;
+  --brand-orange: #ff6a41;
+  --card-bg: rgba(40, 34, 28, 0.82);
+  --card-border: rgba(122, 208, 197, 0.16);
+}
+html[data-theme="dark"] #avatar-canvas { opacity: .45; filter: saturate(.8); }
+html[data-theme="dark"] .main-dish-card { background: rgba(40, 34, 28, 0.5); }
+html[data-theme="dark"] #loadingScreen { background: #17130f; }
+html[data-theme="dark"] .btn-login-outline { backdrop-filter: blur(8px); }
+
+/* ============================================================
+   Floating theme toggle (injected by theme.js)
+   ============================================================ */
+.theme-toggle {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 9500;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px var(--shadow-lg);
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.theme-toggle:hover { transform: translateY(-2px) scale(1.05); }
+.theme-toggle:active { transform: scale(.94); }
+.theme-toggle .tt-sun { display: none; }
+.theme-toggle .tt-moon { display: inline; }
+html[data-theme="dark"] .theme-toggle .tt-sun { display: inline; }
+html[data-theme="dark"] .theme-toggle .tt-moon { display: none; }
+
+@media (max-width: 600px) {
+  .theme-toggle { width: 42px; height: 42px; left: 14px; bottom: 14px; }
+}
+
+/* ============================================================
+   Accessibility: visible keyboard focus everywhere
+   ============================================================ */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  z-index: 10000;
+  background: var(--primary-color);
+  color: #fff;
+  padding: .6rem 1rem;
+  border-radius: 0 0 8px 0;
+  font-weight: 700;
+  text-decoration: none;
+}
+.skip-link:focus { left: 0; }
+
+/* ============================================================
+   Skeleton loaders + friendly states
+   ============================================================ */
+.skeleton-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 2px 10px var(--shadow);
+}
+.skeleton-card .sk-img { width: 100%; height: 180px; }
+.skeleton-card .sk-body { padding: 1rem; }
+.skeleton-line { height: 12px; border-radius: 6px; margin: .5rem 0; }
+.skeleton-line.short { width: 55%; }
+.sk-img, .skeleton-line {
+  background: linear-gradient(100deg,
+    var(--surface-2) 30%, var(--border) 50%, var(--surface-2) 70%);
+  background-size: 220% 100%;
+  animation: skshimmer 1.3s ease-in-out infinite;
+}
+@keyframes skshimmer { to { background-position: -220% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .sk-img, .skeleton-line { animation: none; }
+}
+
+.state-box {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--text-muted);
+}
+.state-box p { margin: 0; max-width: 32ch; }
+.state-box .state-emoji { font-size: 2.4rem; display: block; margin-bottom: .6rem; }
+.state-box h3 { color: var(--heading); margin-bottom: .4rem; }
+.state-box .btn-retry {
+  display: inline-block;      /* so vertical margin/padding apply on <a> too */
+  margin-top: 1rem;
+  padding: .55rem 1.3rem;
+  border: none;
+  border-radius: 50px;
+  background: var(--primary-color);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;      /* the "Add a recipe" version is a link */
+  line-height: 1.2;
+  cursor: pointer;
+}
+.state-box .btn-retry:hover { background: var(--primary-hover); }
+
+/* Listen (text-to-speech) button on recipe detail */
+.listen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0 0 1.5rem;
+  padding: .6rem 1.2rem;
+  border: 1.5px solid var(--primary-color);
+  background: transparent;
+  color: var(--primary-color);
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, transform .15s ease;
+}
+.listen-btn:hover { background: var(--primary-color); color: #fff; }
+.listen-btn:active { transform: scale(.96); }
+.listen-btn.speaking { background: var(--primary-color); color: #fff; }
+
+/* ============================================================
+   Profile header: display name + "Edit profile" button
+   ============================================================ */
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.display-name {
+  margin: .15rem 0 0;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: .95rem;
+}
+.btn-edit-profile {
+  padding: .45rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background .2s ease, transform .15s ease, border-color .2s ease;
+}
+.btn-edit-profile:hover { background: var(--input-bg); border-color: var(--primary-color); }
+.btn-edit-profile:active { transform: scale(.97); }
+.btn-edit-profile[hidden] { display: none; }
+
+/* ============================================================
+   Edit-profile modal (Instagram-style popup)
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(10, 8, 6, 0.55);
+  backdrop-filter: blur(3px);
+  animation: modalFade .18s ease;
+}
+.modal-overlay[hidden] { display: none; }
+
+.modal-card {
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 60px var(--shadow-lg);
+  animation: modalPop .2s ease;
+}
+
+@keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalPop {
+  from { opacity: 0; transform: translateY(12px) scale(.98); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay, .modal-card { animation: none; }
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.modal-head h3 { margin: 0; color: var(--heading); font-size: 1.15rem; }
+.modal-close {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: .3rem;
+  border-radius: 8px;
+  transition: color .2s ease, background .2s ease;
+}
+.modal-close:hover { color: var(--text); background: var(--surface-2); }
+
+.modal-body { padding: 1.3rem 1.4rem 1.5rem; }
+
+/* Avatar row inside the modal */
+.edit-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.3rem;
+}
+.edit-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  background: var(--surface-2);
+}
+.link-btn {
+  border: none;
+  background: transparent;
+  color: var(--primary-color);
+  font: inherit;
+  font-weight: 700;
+  font-size: .95rem;
+  cursor: pointer;
+  padding: 0;
+}
+.link-btn:hover { color: var(--primary-hover); text-decoration: underline; }
+.link-btn:disabled { opacity: .6; cursor: default; text-decoration: none; }
+
+/* Form fields */
+.field { display: block; margin-bottom: 1.05rem; }
+.field > span {
+  display: block;
+  margin-bottom: .35rem;
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--text);
+}
+.field input,
+.field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: .7rem .85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--input-bg);
+  color: var(--text);
+  font: inherit;
+  transition: border-color .2s ease, background .2s ease;
+}
+.field textarea { resize: vertical; min-height: 68px; }
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background: var(--input-bg-focus);
+}
+.field input::placeholder,
+.field textarea::placeholder { color: var(--text-muted); opacity: .8; }
+.field-hint {
+  display: block;
+  margin-top: .3rem;
+  color: var(--text-muted);
+  font-size: .78rem;
+}
+
+.edit-error {
+  margin: 0 0 1rem;
+  padding: .7rem .85rem;
+  border-radius: var(--radius);
+  background: rgba(232, 85, 47, 0.12);
+  color: var(--primary-color);
+  font-size: .88rem;
+  font-weight: 600;
+}
+.edit-error[hidden] { display: none; }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: .7rem;
+  margin-top: .4rem;
+}
+.btn-ghost,
+.btn-primary {
+  padding: .65rem 1.4rem;
+  border-radius: 50px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s ease, transform .15s ease, border-color .2s ease;
+}
+.btn-ghost {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+}
+.btn-ghost:hover { background: var(--surface-2); }
+.btn-primary {
+  border: none;
+  background: var(--primary-color);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:disabled { opacity: .7; cursor: default; }
+.btn-ghost:active,
+.btn-primary:active { transform: scale(.97); }
+
+@media (max-width: 600px) {
+  .modal-card { max-width: 100%; border-radius: var(--radius); }
+  .modal-actions { flex-direction: column-reverse; }
+  .modal-actions .btn-ghost,
+  .modal-actions .btn-primary { width: 100%; }
+}
+
+/* Match the profile header's centered layout on small screens. */
+@media (max-width: 768px) {
+  .profile-name-row { justify-content: center; }
+}
+
+/* ============================================================
+   Follow system: clickable stats, Follow button, people list
+   ============================================================ */
+
+/* Author name links on recipe cards + the detail page */
+.author-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+.author-link:hover { text-decoration: underline; }
+
+/* Followers / Following counts become clickable */
+.stat-clickable {
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 4px 10px;
+  transition: background 0.15s ease;
+}
+.stat-clickable:hover { background: var(--input-bg); }
+.stat-clickable:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* "Following" look for a Follow button that's already followed */
+.btn-outline.is-following {
+  background: var(--input-bg);
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+.btn-outline.is-following:hover {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* People (Followers / Following) list inside the shared modal */
+.people-body {
+  padding: 0.5rem 0.75rem 0.9rem;
+  max-height: min(60vh, 460px);
+  overflow-y: auto;
+}
+.person-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.35rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+.person-row:last-child { border-bottom: none; }
+
+.person-link {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex: 1;
+  min-width: 0;               /* let names truncate instead of overflow */
+  text-decoration: none;
+  color: inherit;
+}
+.person-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  flex-shrink: 0;
+}
+.person-names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+.person-name {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.person-handle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.person-link:hover .person-name { color: var(--primary-color); }
+
+.person-follow {
+  flex-shrink: 0;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+}
+.people-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 1.75rem 1rem;
+  margin: 0;
+}
+
+/* ============================================================
+   Navbar people search (injected by recipes.js on the home page)
+   ============================================================ */
+.nav-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: clamp(180px, 26vw, 320px);
+  padding: 0.45rem 0.85rem;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.nav-search:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+.nav-search-icon { font-size: 0.95rem; line-height: 1; opacity: 0.75; flex-shrink: 0; }
+
+.nav-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  outline: none;
+}
+.nav-search-input::placeholder { color: var(--text-muted); opacity: 0.9; }
+/* beat theme.css's global input:focus-visible outline — the pill shows the ring */
+.nav-search-input:focus-visible { outline: none; }
+/* tidy the native "clear" control on type=search */
+.nav-search-input::-webkit-search-cancel-button { cursor: pointer; }
+
+.nav-search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  min-width: 240px;
+  padding: 0.4rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px var(--shadow-lg);
+  max-height: min(60vh, 380px);
+  overflow-y: auto;
+  z-index: 9000;
+}
+.nav-search-results[hidden] { display: none; }
+
+.nav-search-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+.nav-search-item:hover { background: var(--input-bg); }
+.nav-search-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  flex-shrink: 0;
+}
+.nav-search-names { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.nav-search-name {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-search-item:hover .nav-search-name { color: var(--primary-color); }
+.nav-search-handle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-search-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 1rem;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* On stacked mobile navbars the pill spans the full width. */
+@media (max-width: 768px) {
+  .nav-search { width: 100%; }
+}

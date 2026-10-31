@@ -1,0 +1,326 @@
+/* frontend/css/auth.css */
+
+.auth-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: white;
+  overflow: hidden;
+}
+
+/* ===== LEFT SIDE - Orange panel with wave edge ===== */
+
+.auth-image {
+  flex: 0 0 45%;
+  position: relative;
+  background: linear-gradient(160deg, var(--primary-color), #ff8c5a);
+  display: flex;
+  align-items: center;
+  overflow: visible;
+  min-height: 100vh;
+}
+
+/* Faint decorative line-art doodle in the background */
+.line-art-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 420px;
+  height: 420px;
+  opacity: 0.13;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Wavy edge between orange and white */
+.auth-wave {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  height: 100%;
+  width: 160px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.auth-wave path {
+  fill: var(--primary-color);
+}
+
+.image-stack {
+  position: relative;
+  width: 280px;
+  height: 460px;
+  margin-left: 8%;
+  z-index: 2;
+}
+
+.stack-photo {
+  position: absolute;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid rgba(255,255,255,0.9);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  opacity: 0;
+  animation: photoDropIn 0.7s ease forwards;
+}
+
+.stack-photo.p1 {
+  width: 220px;
+  height: 220px;
+  top: 0;
+  left: 20px;
+  animation-delay: 0.1s;
+}
+
+.stack-photo.p2 {
+  width: 160px;
+  height: 160px;
+  top: 200px;
+  left: 0;
+  animation-delay: 0.3s;
+}
+
+.stack-photo.p3 {
+  width: 130px;
+  height: 130px;
+  bottom: 0;
+  left: 60px;
+  animation-delay: 0.5s;
+}
+
+@keyframes photoDropIn {
+  from { opacity: 0; transform: translateY(-30px) scale(0.85); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Spark/accent decorations */
+.spark {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  opacity: 0.85;
+  z-index: 3;
+  animation: sparkFloat 3s ease-in-out infinite;
+}
+
+.spark svg { width: 100%; height: 100%; }
+
+.spark.s1 { top: 8%; left: 12%; animation-delay: 0s; }
+.spark.s2 { top: 18%; right: 20px; animation-delay: 0.8s; }
+.spark.s3 { top: 45%; left: 4%; animation-delay: 1.6s; }
+.spark.s4 { bottom: 10%; right: 30px; animation-delay: 2.4s; }
+.spark.s5 { bottom: 6%; left: 15%; animation-delay: 1.2s; }
+
+@keyframes sparkFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+  50% { transform: translateY(-12px) rotate(12deg); opacity: 1; }
+}
+
+/* ===== RIGHT SIDE - Form ===== */
+
+.auth-form-side {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-color);
+  overflow: hidden;
+}
+
+/* Decorative leaf photos peeking into corners */
+.corner-decor {
+  position: absolute;
+  border-radius: 0;
+  object-fit: cover;
+  z-index: 1;
+  opacity: 0;
+  filter: grayscale(100%) contrast(0.85) brightness(1.1);
+  animation: fadeInSlow 0.8s ease forwards;
+}
+
+.corner-decor.top-right {
+  width: 220px;
+  height: 260px;
+  top: 0;
+  right: 40px;
+  animation-delay: 0.3s;
+  -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+}
+
+.corner-decor.bottom-right {
+  width: 220px;
+  height: 260px;
+  bottom: 0;
+  right: 80px;
+  animation-delay: 0.5s;
+  -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+}
+
+@keyframes fadeInSlow {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 0.22; transform: scale(1); }
+}
+
+.auth-box {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 380px;
+  padding: 2rem;
+}
+
+.auth-box h2 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--secondary-color);
+  margin-bottom: 0.3rem;
+  opacity: 0;
+  animation: fieldSlideIn 0.5s ease forwards;
+}
+
+.auth-subtext {
+  color: #888;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fieldSlideIn 0.5s ease forwards;
+  animation-delay: 0.05s;
+}
+
+.auth-box form > label,
+.auth-box form > input {
+  opacity: 0;
+  animation: fieldSlideIn 0.5s ease forwards;
+}
+
+.auth-box label:nth-of-type(1) { animation-delay: 0.1s; }
+.auth-box input:nth-of-type(1) { animation-delay: 0.15s; }
+.auth-box label:nth-of-type(2) { animation-delay: 0.2s; }
+.auth-box input:nth-of-type(2) { animation-delay: 0.25s; }
+
+@keyframes fieldSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-box label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dark-color);
+  margin: 1rem 0 0.4rem;
+}
+
+.auth-box input {
+  width: 100%;
+  padding: 0.85rem 1.2rem;
+  border: none;
+  background: #f1ede4;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.auth-box input:focus {
+  outline: none;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(232, 85, 47, 0.2);
+}
+
+.forgot-link {
+  display: block;
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  margin-top: 0.6rem;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.btn-primary {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.9rem;
+  background: linear-gradient(135deg, var(--primary-color), #ff6b35);
+  background-size: 200% 200%;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  animation: fieldSlideIn 0.5s ease forwards;
+  animation-delay: 0.35s;
+  transition: background-position 0.3s ease;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  background-position: 100% 0;
+}
+
+.auth-switch {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0;
+  animation: fieldSlideIn 0.5s ease forwards;
+  animation-delay: 0.4s;
+}
+
+.auth-switch a {
+  color: var(--primary-color);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 0.85rem;
+  margin-top: 0.8rem;
+  text-align: center;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #f1ede4 inset !important;
+  -webkit-text-fill-color: #1a1a1a !important;
+}
+
+@media (max-width: 768px) {
+  .auth-image { display: none; }
+  .auth-form-side { padding: 1rem; }
+  .corner-decor { display: none; }
+}
+
+.logo {
+  font-family: 'Pacifico', cursive !important;
+  font-size: 1.85rem !important;
+  font-weight: 400 !important;
+  color: #E85D3F !important;
+  text-decoration: none !important;
+}

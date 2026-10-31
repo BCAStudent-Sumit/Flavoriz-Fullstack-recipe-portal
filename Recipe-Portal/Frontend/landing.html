@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flavoriz</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="landing.css">
+  <link rel="stylesheet" href="theme.css">
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="assistant.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <body>
+
+  <!-- Loading screen — shown until the page + 3D scene are ready -->
+  <div id="loadingScreen">
+    <canvas id="loaderCanvas"></canvas>
+    <div class="loader-text">
+      <span class="loader-logo">Flavoriz</span>
+      <span class="loader-subtext">Warming up the kitchen<span class="loader-dots"><span>.</span><span>.</span><span>.</span></span></span>
+    </div>
+  </div>
+
+  <!-- 3D Cinematic Avatar Background -->
+  <canvas id="avatar-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="logo">Flavoriz</div>
+    <div class="nav-auth">
+      <a href="login.html" class="btn-login-outline">Log In</a>
+      <a href="signup.html" class="btn-signup">Sign Up</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main id="main" class="hero-container">
+    <div class="hero-left">
+      <h1 class="hero-heading">
+        Discover, Share, and <br/>
+        <span class="highlight-coral">Connect.</span><br/>
+        All things recipes.
+      </h1>
+      <p class="hero-subtext">
+        Explore a world of family recipes, share your own, and connect with home cooks who cherish bringing loved ones together through food.
+      </p>
+      
+      <div class="hero-cta">
+        <a href="signup.html" class="btn-cta-primary">Get Started Free</a>
+        <a href="login.html" class="btn-cta-secondary">Log In</a>
+      </div>
+
+      <div class="social-proof">
+        <div class="avatar-stack">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="user1" />
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="user2" />
+          <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=80&q=80" alt="user3" />
+          <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80" alt="user4" />
+        </div>
+        <span>Loved by home cooks and growing every day</span>
+      </div>
+    </div>
+
+<div class="hero-right">
+  <div class="dish-collage">
+    <div class="dish-glow"></div>
+
+    <div class="dish-frame dish-main">
+      <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80" alt="Tacos">
+      <div class="steam-wisp w1"></div>
+      <div class="steam-wisp w2"></div>
+      <div class="steam-wisp w3"></div>
+    </div>
+
+    <div class="dish-frame dish-top">
+      <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=400&q=80" alt="Pancakes">
+    </div>
+
+    <div class="dish-frame dish-bottom">
+      <img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=400&q=80" alt="Dessert">
+    </div>
+  </div>
+</div>
+
+  <!-- Floating Thumbnails -->
+  <div class="floating-dish top-dish">
+    <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=300&q=80" alt="Berry Cake" />
+  </div>
+
+    <div class="floating-dish bottom-dish">
+    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=300&q=80" alt="Burger" />
+  </div>
+</div>
+
+  </main>
+
+  </main>
+
+  <!-- Trending Recipes Section -->
+  <section class="trending-section">
+    <div class="section-header">
+      <h2>Trending <span class="highlight-coral">Recipes</span></h2>
+      <p>A taste of what the community is cooking</p>
+    </div>
+
+    <div class="recipe-grid">
+      <div class="recipe-card">
+        <div class="card-img-wrapper">
+          <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80" alt="Classic American Cheeseburger" />
+        </div>
+        <div class="card-details">
+          <h3>Classic American Cheeseburger</h3>
+          <div class="author-tag">
+            <span class="author-icon">👤</span> Flavoriz Team
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-card">
+        <div class="card-img-wrapper">
+          <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80" alt="Rich Chocolate Lava Cake" />
+        </div>
+        <div class="card-details">
+          <h3>Rich Chocolate Lava Cake</h3>
+          <div class="author-tag">
+            <span class="author-icon">👤</span> Flavoriz Team
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-card">
+        <div class="card-img-wrapper">
+          <img src="https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=600&q=80" alt="Creamy Butter Chicken" />
+        </div>
+        <div class="card-details">
+          <h3>Creamy Butter Chicken</h3>
+          <div class="author-tag">
+            <span class="author-icon">👤</span> Flavoriz Team
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-card">
+        <div class="card-img-wrapper">
+          <img src="https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=600&q=80" alt="Fluffy Buttermilk Pancakes" />
+        </div>
+        <div class="card-details">
+          <h3>Fluffy Buttermilk Pancakes</h3>
+          <div class="author-tag">
+            <span class="author-icon">👤</span> Flavoriz Team
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="loader.js"></script>
+  <script src="landing.js"></script>
+
+  <script src="assistant.js"></script>
+</body>
+</html>

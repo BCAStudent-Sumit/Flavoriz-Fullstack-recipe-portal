@@ -1,0 +1,73 @@
+<!-- frontend/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flavoriz - Recipe Community</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="theme.css">
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="assistant.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">Flavoriz</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+
+      <div class="dropdown">
+        <a href="#" class="dropdown-trigger" id="dropdownTrigger">Recipes ▾</a>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <div class="dropdown-column">
+            <h4>🍳 Recipe Types</h4>
+            <a href="index.html?cuisine=Breakfast">Breakfast</a>
+            <a href="index.html?cuisine=Lunch">Lunch</a>
+            <a href="index.html?cuisine=Dinner">Dinner</a>
+            <a href="index.html?cuisine=Desserts">Desserts</a>
+            <a href="index.html?cuisine=Beverages">Beverages</a>
+            <a href="index.html?cuisine=Snacks">Snacks</a>
+          </div>
+          <div class="dropdown-column">
+            <h4>🍽 Cuisines</h4>
+            <a href="index.html?cuisine=American">American</a>
+            <a href="index.html?cuisine=Chinese">Chinese</a>
+            <a href="index.html?cuisine=Continental">Continental</a>
+            <a href="index.html?cuisine=Indian">Indian</a>
+            <a href="index.html?cuisine=Italian">Italian</a>
+            <a href="index.html?cuisine=Mexican">Mexican</a>
+          </div>
+          <div class="dropdown-column">
+            <h4>🌱 Diet & Lifestyle</h4>
+            <a href="index.html?cuisine=Vegetarian">Vegetarian</a>
+            <a href="index.html?cuisine=Vegan">Vegan</a>
+            <a href="index.html?cuisine=Gluten-Free">Gluten-Free</a>
+            <a href="index.html?cuisine=Weight Loss">Weight Loss</a>
+          </div>
+        </div>
+      </div>
+
+      <a href="recipe.html">Add Recipe</a>
+      <a href="profile.html">Profile</a>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </nav>
+
+  <main id="main">
+    <h1 class="heading-duo" id="feedHeading">Discover <span>Recipes</span></h1>
+    <a href="index.html" id="clearFilter" class="clear-filter-link" style="display:none;">✕ Clear filter</a>
+    <div id="recipeContainer" class="recipe-grid"></div>
+  </main>
+
+  <script src="recipes.js"></script>
+  <script src="dropdown.js"></script>
+  <script src="transitions.js"></script>
+  <script src="assistant.js"></script>
+</body>
+</html>

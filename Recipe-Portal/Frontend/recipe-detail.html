@@ -1,0 +1,36 @@
+<!-- frontend/recipe-detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe - Flavoriz</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="recipe-detail.css">
+  <link rel="stylesheet" href="theme.css">
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="assistant.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">Flavoriz</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="recipe.html">Add Recipe</a>
+      <a href="profile.html">Profile</a>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </nav>
+
+  <main id="main" class="recipe-detail-page">
+    <div id="recipeContent">
+      <p class="loading-pulse" style="text-align:center; padding: 3rem;">Loading recipe...</p>
+    </div>
+  </main>
+
+  <script src="recipeDetail.js"></script>
+  <script src="assistant.js"></script>
+</body>
+</html>

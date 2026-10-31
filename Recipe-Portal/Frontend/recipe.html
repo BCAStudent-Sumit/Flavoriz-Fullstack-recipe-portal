@@ -1,0 +1,85 @@
+<!-- frontend/recipe.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Recipe - Flavoriz</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="form.css">
+  <link rel="stylesheet" href="theme.css">
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="assistant.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+   <nav class="navbar">
+  <a href="index.html" class="logo">Flavoriz</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="recipe.html" class="active">Add Recipe</a>
+    <a href="profile.html">Profile</a>
+    <button id="logoutBtn">Logout</button>
+  </div>
+</nav>
+  <main id="main" class="form-page">
+    <div class="form-card">
+      <h2>Share a New Recipe</h2>
+      <p class="form-subtext">Tell the community what you're cooking</p>
+
+      <form id="recipeForm">
+        <label for="title">Recipe Title</label>
+        <input type="text" id="title" placeholder="e.g. Spicy Ground Beef Tacos" required>
+
+        <div class="form-row">
+          <div>
+            <label for="cuisine">Cuisine</label>
+            <input type="text" id="cuisine" placeholder="e.g. Mexican" required>
+          </div>
+          <div>
+            <label for="servings">Servings</label>
+            <input type="number" id="servings" placeholder="4" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label for="prepTime">Prep Time</label>
+            <input type="text" id="prepTime" placeholder="15 Minutes" required>
+          </div>
+          <div>
+            <label for="cookTime">Cook Time</label>
+            <input type="text" id="cookTime" placeholder="10 Minutes" required>
+          </div>
+        </div>
+
+        <label for="image">Recipe Image</label>
+<div class="image-upload-box" id="imageUploadBox">
+  <input type="file" id="image" accept="image/*" hidden>
+  <div id="uploadPlaceholder">
+    <span class="upload-icon">📷</span>
+    <p>Click to upload a photo</p>
+  </div>
+  <img id="imagePreview" style="display:none;" alt="preview">
+</div>
+
+        <label for="ingredients">Ingredients (one per line)</label>
+        <textarea id="ingredients" rows="5" placeholder="1 lb ground beef&#10;2 tbsp olive oil&#10;1 tsp cumin" required></textarea>
+
+        <label for="steps">Cooking Steps (one per line)</label>
+        <textarea id="steps" rows="6" placeholder="Season the beef...&#10;Heat skillet...&#10;Assemble tacos..." required></textarea>
+
+        <button type="submit" class="btn-primary">Publish Recipe</button>
+      </form>
+      <p id="errorMsg" class="error-text"></p>
+    </div>
+  </main>
+
+  <script src="recipeForm.js"></script>
+  <script src="transitions.js"></script>
+  <script src="assistant.js"></script>
+</body>
+</html>

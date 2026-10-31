@@ -1,0 +1,9 @@
+{
+  "name": "flavoriz-recipe-portal",
+  "version": "1.0.0",
+  "description": "Flavoriz Recipe Portal",
+  "scripts": {
+    "start": "node Recipe-Portal/backend/server.js",
+    "dev": "node --watch Recipe-Portal/backend/server.js"
+  }
+}

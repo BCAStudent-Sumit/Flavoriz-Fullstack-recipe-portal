@@ -1,0 +1,69 @@
+<!-- frontend/signup.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - Flavoriz</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="theme.css">
+  <script src="theme.js"></script>
+</head>
+<body>
+
+  <div class="auth-wrapper">
+    <div class="auth-image">
+      <svg class="line-art-bg" viewBox="0 0 200 200" fill="none" stroke="white" stroke-width="2">
+        <circle cx="100" cy="100" r="80"/>
+        <path d="M60 100 Q100 60 140 100 Q100 140 60 100 Z"/>
+        <line x1="30" y1="60" x2="30" y2="140"/>
+        <line x1="170" y1="60" x2="170" y2="140"/>
+      </svg>
+
+      <svg class="auth-wave" viewBox="0 0 160 800" preserveAspectRatio="none">
+        <path d="M0,0 L60,0 C90,80 30,160 70,240 C110,320 20,400 65,480 C100,560 30,640 60,720 C80,760 40,780 60,800 L0,800 Z"/>
+      </svg>
+
+      <div class="image-stack">
+        <img class="stack-photo p1" src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400" alt="pancakes">
+        <img class="stack-photo p2" src="https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?w=300" alt="pizza">
+        <img class="stack-photo p3" src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=300" alt="dessert">
+      </div>
+
+      <div class="spark s1"><svg viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h7l-2 8 10-12h-7l2-8z"/></svg></div>
+      <div class="spark s2"><svg viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h7l-2 8 10-12h-7l2-8z"/></svg></div>
+      <div class="spark s3"><svg viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h7l-2 8 10-12h-7l2-8z"/></svg></div>
+      <div class="spark s4"><svg viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h7l-2 8 10-12h-7l2-8z"/></svg></div>
+      <div class="spark s5"><svg viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h7l-2 8 10-12h-7l2-8z"/></svg></div>
+    </div>
+
+    <div class="auth-form-side">
+      <img class="corner-decor top-right" src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=300" alt="texture">
+<img class="corner-decor bottom-right" src="https://images.unsplash.com/photo-1540420773420-3366772f4999?w=300" alt="herbs">
+      <div class="auth-box">
+        <h2>Create Account</h2>
+        <p class="auth-subtext">Start your culinary journey today</p>
+
+        <form id="signupForm">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="e.g. chef_maria" required autocomplete="username">
+
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password">
+
+          <button type="submit" class="btn-primary">Sign Up</button>
+        </form>
+
+        <p class="auth-switch">Already have an account? <a href="login.html">Log in</a></p>
+        <p id="errorMsg" class="error-text"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+</body>
+</html>

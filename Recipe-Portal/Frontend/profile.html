@@ -1,0 +1,105 @@
+<!-- frontend/profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Flavoriz</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="profile.css">
+  <link rel="stylesheet" href="theme.css">
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="assistant.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <nav class="navbar">
+    <div class="logo">Flavoriz</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="recipe.html">Add Recipe</a>
+      <a href="profile.html" class="active">Profile</a>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section class="profile-header">
+  <div class="avatar-wrapper">
+    <img id="profileAvatar" src="https://api.dicebear.com/7.x/initials/svg?seed=User" alt="avatar">
+    <label for="avatarInput" class="avatar-edit-btn">✎</label>
+    <input type="file" id="avatarInput" accept="image/*" hidden>
+  </div>
+  <div class="profile-info">
+    <div class="profile-name-row">
+      <h2 id="profileUsername">Loading...</h2>
+      <button id="editProfileBtn" class="btn-edit-profile" type="button" hidden>Edit profile</button>
+    </div>
+    <p id="profileName" class="display-name"></p>
+    <p id="profileBio" class="bio-text"></p>
+
+    <div class="profile-stats">
+      <div><strong id="recipeCount">0</strong><span>Recipes</span></div>
+      <div><strong id="followerCount">0</strong><span>Followers</span></div>
+      <div><strong id="followingCount">0</strong><span>Following</span></div>
+    </div>
+
+    <button id="followBtn" class="btn-outline" style="display:none;">Follow</button>
+  </div>
+</section>
+
+    <h3 class="section-title">Recipes</h3>
+    <div id="profileRecipes" class="recipe-grid"></div>
+
+    <!-- Edit profile modal (Instagram-style) -->
+    <div id="editModal" class="modal-overlay" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+        <div class="modal-head">
+          <h3 id="editTitle">Edit profile</h3>
+          <button id="editClose" class="modal-close" type="button" aria-label="Close">✕</button>
+        </div>
+        <form id="editForm" class="modal-body" novalidate>
+          <div class="edit-avatar-row">
+            <img id="editAvatarPreview" class="edit-avatar" src="" alt="Your profile photo">
+            <div class="edit-avatar-actions">
+              <button type="button" id="editChangePhoto" class="link-btn">Change photo</button>
+              <input type="file" id="editAvatarInput" accept="image/*" hidden>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>Display name</span>
+            <input type="text" id="editName" maxlength="50" placeholder="Your name">
+          </label>
+
+          <label class="field">
+            <span>Username</span>
+            <input type="text" id="editUsername" maxlength="30" placeholder="username" autocomplete="off" autocapitalize="none" spellcheck="false">
+            <small class="field-hint">Letters, numbers, dots and underscores.</small>
+          </label>
+
+          <label class="field">
+            <span>Bio</span>
+            <textarea id="editBio" rows="3" maxlength="300" placeholder="Tell people about you…"></textarea>
+            <small class="field-hint"><span id="bioCount">0</span>/300</small>
+          </label>
+
+          <p id="editError" class="edit-error" role="alert" hidden></p>
+
+          <div class="modal-actions">
+            <button type="button" id="editCancel" class="btn-ghost">Cancel</button>
+            <button type="submit" id="editSave" class="btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="profile.js"></script>
+  <script src="transitions.js"></script>
+  <script src="assistant.js"></script>
+</body>
+</html>

@@ -58,10 +58,15 @@ function renderRecipeCard(recipe) {
     `<span class="dietary-micro-pill">${d}</span>`
   ).join('');
 
-  const authorName = recipe.author?.username || recipe.author?.name || 'Flavoriz Chef';
-  const authorAvatar = (recipe.author && recipe.author.profilePic)
+  const authorName = recipe.author?.username || recipe.author?.name || 'Flavoriz Team';
+  const hasCustomPic = Boolean(recipe.author && recipe.author.profilePic);
+  const authorPicUrl = hasCustomPic
     ? (recipe.author.profilePic.startsWith('http') ? recipe.author.profilePic : `http://localhost:5000${recipe.author.profilePic}`)
-    : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(authorName)}`;
+    : '';
+
+  const avatarHtml = hasCustomPic
+    ? `<div class="author-avatar-badge"><img class="author-avatar-img" src="${authorPicUrl}" alt="${authorName}" loading="lazy"></div>`
+    : `<div class="author-avatar-badge" title="${authorName}"><span class="avatar-fallback-icon">👨‍🍳</span></div>`;
 
   return `
     <div class="recipe-card">
@@ -82,7 +87,7 @@ function renderRecipeCard(recipe) {
         
         <div class="recipe-card-footer">
           <div class="recipe-author-info">
-            <img class="author-avatar-img" src="${authorAvatar}" alt="${authorName}" loading="lazy">
+            ${avatarHtml}
             ${recipe.author?._id
               ? `<a class="author-link" href="profile.html?id=${recipe.author._id}" onclick="event.stopPropagation()">${authorName}</a>`
               : `<span class="author-name">${authorName}</span>`}

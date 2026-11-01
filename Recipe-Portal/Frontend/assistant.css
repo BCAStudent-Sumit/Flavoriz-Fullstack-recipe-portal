@@ -6,34 +6,67 @@
 
 .flavo-fab {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
+  right: 24px;
+  bottom: 24px;
   z-index: 9600;
   display: inline-flex;
   align-items: center;
-  gap: .55rem;
-  padding: 0 1.1rem 0 .7rem;
-  height: 56px;
+  justify-content: center;
+  gap: 0;
+  height: 52px;
+  width: 52px;
+  max-width: 52px;
   border: none;
   border-radius: 50px;
   background: linear-gradient(135deg, var(--primary-color), #ff8355);
   color: #fff;
   font-family: inherit;
   font-weight: 700;
-  font-size: .95rem;
+  font-size: .92rem;
   cursor: pointer;
-  box-shadow: 0 10px 26px rgba(232, 85, 47, .42);
-  transition: transform .2s ease, box-shadow .2s ease;
+  box-shadow: 0 8px 24px rgba(232, 85, 47, .38);
+  transition: max-width .28s cubic-bezier(0.4, 0, 0.2, 1),
+              width .28s cubic-bezier(0.4, 0, 0.2, 1),
+              padding .28s ease,
+              transform .2s ease,
+              box-shadow .2s ease;
+  overflow: hidden;
+  padding: 0;
 }
-.flavo-fab:hover { transform: translateY(-2px) scale(1.03); }
+
+.flavo-fab .flavo-fab-label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width .25s ease, opacity .2s ease, margin .2s ease;
+  margin-left: 0;
+}
+
+.flavo-fab:hover,
+.flavo-fab:focus-visible {
+  width: auto;
+  max-width: 190px;
+  padding: 0 1.2rem 0 1rem;
+  box-shadow: 0 12px 30px rgba(232, 85, 47, .5);
+  transform: translateY(-2px);
+}
+
+.flavo-fab:hover .flavo-fab-label,
+.flavo-fab:focus-visible .flavo-fab-label {
+  max-width: 130px;
+  opacity: 1;
+  margin-left: .5rem;
+}
+
 .flavo-fab:active { transform: scale(.96); }
-.flavo-fab .flavo-fab-emoji { font-size: 1.5rem; line-height: 1; }
+.flavo-fab .flavo-fab-emoji { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
 .flavo-fab.hidden { display: none; }
 
 @media (max-width: 600px) {
-  .flavo-fab { right: 14px; bottom: 14px; height: 52px; padding: 0 1rem 0 .6rem; }
-  .flavo-fab .flavo-fab-label { display: none; }
-  .flavo-fab { padding: 0; width: 52px; justify-content: center; }
+  .flavo-fab { right: 14px; bottom: 14px; height: 48px; width: 48px; max-width: 48px; }
+  .flavo-fab:hover { width: 48px; max-width: 48px; padding: 0; }
+  .flavo-fab .flavo-fab-label { display: none !important; }
 }
 
 /* ---------- Panel ---------- */

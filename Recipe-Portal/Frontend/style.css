@@ -677,3 +677,13 @@ body {
   transform: none;
   box-shadow: none;
 }
+
+
+/* Ensure bottom content is never obscured by floating widgets */
+main {
+  padding-bottom: 90px !important;
+}
+
+.recipe-grid {
+  padding-bottom: 5rem !important;
+}

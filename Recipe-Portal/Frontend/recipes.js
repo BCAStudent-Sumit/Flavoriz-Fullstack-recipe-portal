@@ -48,35 +48,52 @@ function stateBox(container, emoji, title, msg, opts) {
 
 function renderRecipeCard(recipe) {
   const ratingBadge = recipe.averageRating > 0
-    ? `<span style="color:#f59e0b; font-weight:700">★ ${recipe.averageRating}</span>`
-    : '';
+    ? `<span class="recipe-rating-badge">★ ${Number(recipe.averageRating).toFixed(1)}</span>`
+    : `<span class="recipe-rating-badge rating-new">★ New</span>`;
+
+  const displayTime = recipe.prepTime || recipe.cookTime || '25m';
+  const difficulty = recipe.difficulty || 'Easy';
 
   const dietaryTags = (recipe.dietary || []).slice(0, 2).map(d =>
-    `<span style="background:#10b981; color:#fff; font-size:0.7rem; font-weight:600; padding:2px 7px; border-radius:10px;">${d}</span>`
-  ).join(' ');
+    `<span class="dietary-micro-pill">${d}</span>`
+  ).join('');
+
+  const authorName = recipe.author?.username || recipe.author?.name || 'Flavoriz Chef';
+  const authorAvatar = (recipe.author && recipe.author.profilePic)
+    ? (recipe.author.profilePic.startsWith('http') ? recipe.author.profilePic : `http://localhost:5000${recipe.author.profilePic}`)
+    : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(authorName)}`;
 
   return `
     <div class="recipe-card">
-      <img src="${getImageUrl(recipe.image)}" alt="${recipe.title}" onclick="window.location.href='recipe-detail.html?id=${recipe._id}'">
+      <div class="recipe-card-media" onclick="window.location.href='recipe-detail.html?id=${recipe._id}'">
+        <img src="${getImageUrl(recipe.image)}" alt="${recipe.title}" loading="lazy">
+        <div class="card-overlay-badges">
+          <span class="card-badge badge-time">⏱ ${displayTime}</span>
+          <span class="card-badge badge-diff diff-${difficulty.toLowerCase()}">${difficulty}</span>
+        </div>
+      </div>
       <div class="recipe-card-body">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem">
-          <span style="font-size:0.75rem; font-weight:700; color:var(--primary-color); text-transform:uppercase">${recipe.cuisine || 'General'}</span>
+        <div class="recipe-card-meta-top">
+          <span class="recipe-category">${recipe.cuisine || 'General'}</span>
           ${ratingBadge}
         </div>
-        <h4 onclick="window.location.href='recipe-detail.html?id=${recipe._id}'">${recipe.title}</h4>
-        <div style="margin-bottom:0.5rem; display:flex; gap:0.3rem; flex-wrap:wrap">
-          ${dietaryTags}
+        <h4 class="recipe-card-title" onclick="window.location.href='recipe-detail.html?id=${recipe._id}'">${recipe.title}</h4>
+        ${dietaryTags ? `<div class="recipe-card-dietary">${dietaryTags}</div>` : ''}
+        
+        <div class="recipe-card-footer">
+          <div class="recipe-author-info">
+            <img class="author-avatar-img" src="${authorAvatar}" alt="${authorName}" loading="lazy">
+            ${recipe.author?._id
+              ? `<a class="author-link" href="profile.html?id=${recipe.author._id}" onclick="event.stopPropagation()">${authorName}</a>`
+              : `<span class="author-name">${authorName}</span>`}
+          </div>
+          <div class="recipe-social-stats">
+            <span class="stat-group" title="Saves">❤️ <span class="stat-num">${recipe.favoritesCount || 0}</span></span>
+            <span class="stat-dot">·</span>
+            <span class="stat-group" title="Reviews">💬 <span class="stat-num">${recipe.numReviews || 0}</span></span>
+          </div>
         </div>
-        <div class="recipe-card-author">
-          <span>👤</span>
-          ${recipe.author?._id
-            ? `<a class="author-link" href="profile.html?id=${recipe.author._id}">${recipe.author.username || 'Unknown'}</a>`
-            : `<span>${recipe.author?.username || 'Unknown'}</span>`}
-        </div>
-        <div class="recipe-card-stats">
-          <span>❤️ ${recipe.favoritesCount || 0} saves</span>
-          <span>💬 ${recipe.numReviews || 0} reviews</span>
-        </div>
+
         ${recipe.author?._id === currentUserId ? `
           <div class="recipe-card-actions">
             <button class="btn-edit" onclick="window.location.href='edit-recipe.html?id=${recipe._id}'">✎ Edit</button>

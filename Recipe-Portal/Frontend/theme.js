@@ -71,7 +71,26 @@
     btn.addEventListener('click', function () {
       setTheme(current() === 'dark' ? 'light' : 'dark');
     });
-    document.body.appendChild(btn);
+
+    // Mount inside navbar beside Logout instead of floating over cards
+    var navLinks = document.querySelector('.nav-links');
+    var logoutBtn = document.getElementById('logoutBtn');
+    if (navLinks && logoutBtn) {
+      navLinks.insertBefore(btn, logoutBtn);
+      btn.classList.add('in-navbar');
+    } else if (navLinks) {
+      navLinks.appendChild(btn);
+      btn.classList.add('in-navbar');
+    } else {
+      var nav = document.querySelector('.navbar');
+      if (nav) {
+        nav.appendChild(btn);
+        btn.classList.add('in-navbar');
+      } else {
+        document.body.appendChild(btn);
+      }
+    }
+
     updateButton(current());
   }
 

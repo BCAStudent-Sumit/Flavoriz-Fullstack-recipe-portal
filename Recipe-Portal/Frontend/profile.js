@@ -76,20 +76,41 @@ async function loadProfile() {
       return;
     }
 
-    container.innerHTML = recipes.map((r, i) => `
-      <div class="recipe-card" style="animation-delay: ${i * 0.05}s">
-        <img src="${getImageUrl(r.image)}" alt="${r.title}" onclick="window.location.href='recipe-detail.html?id=${r._id}'">
-        <div class="recipe-card-body">
-          <h4 onclick="window.location.href='recipe-detail.html?id=${r._id}'">${r.title}</h4>
-          <p>${r.cuisine}</p>
-          ${isOwnProfile ? `
-          <div class="recipe-card-actions">
-            <button class="btn-edit" onclick="window.location.href='edit-recipe.html?id=${r._id}'">✎ Edit</button>
-            <button class="btn-delete" onclick="deleteRecipe('${r._id}')">🗑 Delete</button>
-          </div>` : ''}
+    container.innerHTML = recipes.map((r, i) => {
+      const displayTime = r.prepTime || r.cookTime || '25m';
+      const difficulty = r.difficulty || 'Easy';
+      const rating = r.averageRating > 0 ? `★ ${Number(r.averageRating).toFixed(1)}` : '★ New';
+      return `
+        <div class="recipe-card" style="animation-delay: ${i * 0.05}s">
+          <div class="recipe-card-media" onclick="window.location.href='recipe-detail.html?id=${r._id}'">
+            <img src="${getImageUrl(r.image)}" alt="${r.title}" loading="lazy">
+            <div class="card-overlay-badges">
+              <span class="card-badge badge-time">⏱ ${displayTime}</span>
+              <span class="card-badge badge-diff diff-${difficulty.toLowerCase()}">${difficulty}</span>
+            </div>
+          </div>
+          <div class="recipe-card-body">
+            <div class="recipe-card-meta-top">
+              <span class="recipe-category">${r.cuisine || 'General'}</span>
+              <span class="recipe-rating-badge">${rating}</span>
+            </div>
+            <h4 class="recipe-card-title" onclick="window.location.href='recipe-detail.html?id=${r._id}'">${r.title}</h4>
+            <div class="recipe-card-footer">
+              <div class="recipe-social-stats">
+                <span class="stat-group" title="Saves">❤️ <span class="stat-num">${r.favoritesCount || 0}</span></span>
+                <span class="stat-dot">·</span>
+                <span class="stat-group" title="Reviews">💬 <span class="stat-num">${r.numReviews || 0}</span></span>
+              </div>
+            </div>
+            ${isOwnProfile ? `
+            <div class="recipe-card-actions">
+              <button class="btn-edit" onclick="window.location.href='edit-recipe.html?id=${r._id}'">✎ Edit</button>
+              <button class="btn-delete" onclick="deleteRecipe('${r._id}')">🗑 Delete</button>
+            </div>` : ''}
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   } catch (err) {
     console.error(err);
     document.getElementById('profileUsername').textContent = 'Profile unavailable';
@@ -567,16 +588,36 @@ async function toggleFollow(targetId) {
         return;
       }
 
-      container.innerHTML = favorites.map((r, i) => `
-        <div class="recipe-card" style="animation-delay: ${i * 0.05}s">
-          <img src="${getImageUrl(r.image)}" alt="${r.title}" onclick="window.location.href='recipe-detail.html?id=${r._id}'">
-          <div class="recipe-card-body">
-            <h4 onclick="window.location.href='recipe-detail.html?id=${r._id}'">${r.title}</h4>
-            <p>${r.cuisine || 'General'}</p>
-            <div style="font-size:0.85rem; color:#f59e0b; margin-top:0.4rem;">★ ${r.averageRating || '0.0'} (${r.numReviews || 0} reviews)</div>
+      container.innerHTML = favorites.map((r, i) => {
+        const displayTime = r.prepTime || r.cookTime || '25m';
+        const difficulty = r.difficulty || 'Easy';
+        const rating = r.averageRating > 0 ? `★ ${Number(r.averageRating).toFixed(1)}` : '★ New';
+        return `
+          <div class="recipe-card" style="animation-delay: ${i * 0.05}s">
+            <div class="recipe-card-media" onclick="window.location.href='recipe-detail.html?id=${r._id}'">
+              <img src="${getImageUrl(r.image)}" alt="${r.title}" loading="lazy">
+              <div class="card-overlay-badges">
+                <span class="card-badge badge-time">⏱ ${displayTime}</span>
+                <span class="card-badge badge-diff diff-${difficulty.toLowerCase()}">${difficulty}</span>
+              </div>
+            </div>
+            <div class="recipe-card-body">
+              <div class="recipe-card-meta-top">
+                <span class="recipe-category">${r.cuisine || 'General'}</span>
+                <span class="recipe-rating-badge">${rating}</span>
+              </div>
+              <h4 class="recipe-card-title" onclick="window.location.href='recipe-detail.html?id=${r._id}'">${r.title}</h4>
+              <div class="recipe-card-footer">
+                <div class="recipe-social-stats">
+                  <span class="stat-group" title="Saves">❤️ <span class="stat-num">${r.favoritesCount || 0}</span></span>
+                  <span class="stat-dot">·</span>
+                  <span class="stat-group" title="Reviews">💬 <span class="stat-num">${r.numReviews || 0}</span></span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     } catch (err) {
       container.innerHTML = `
         <div class="state-box" style="grid-column: 1 / -1;">

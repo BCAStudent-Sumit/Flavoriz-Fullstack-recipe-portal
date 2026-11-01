@@ -675,8 +675,9 @@
     var fab = document.createElement('button');
     fab.type = 'button';
     fab.className = 'flavo-fab';
-    fab.setAttribute('aria-label', 'Open Chef Flavo, the cooking assistant');
-    fab.innerHTML = '<span class="flavo-fab-emoji" aria-hidden="true">👨‍🍳</span><span class="flavo-fab-label">Ask Chef Flavo</span>';
+    fab.setAttribute('aria-label', 'Ask Chef AI - your cooking assistant');
+    fab.setAttribute('title', 'Ask Chef AI');
+    fab.innerHTML = '<span class="flavo-fab-emoji" aria-hidden="true">👨‍🍳</span><span class="flavo-fab-label">Ask Chef AI</span>';
     fab.addEventListener('click', open);
 
     var panel = document.createElement('section');

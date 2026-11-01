@@ -49,15 +49,24 @@ router.post('/signup', validate({ body: signupSchema }), async (req, res) => {
   }
 });
 
-// LOGIN
+// LOGIN (Supports login with Email OR Username)
 router.post('/login', validate({ body: loginSchema }), async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email.toLowerCase() });
-    if (!user) return res.status(400).json({ error: 'Invalid email or password.' });
+    const identifier = (email || '').trim();
+
+    // Match either email or username (case-insensitive)
+    const safeIdentifier = identifier.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const rx = new RegExp(`^${safeIdentifier}$`, 'i');
+
+    const user = await User.findOne({
+      $or: [{ email: identifier.toLowerCase() }, { username: rx }],
+    });
+
+    if (!user) return res.status(400).json({ error: 'Invalid email/username or password.' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: 'Invalid email or password.' });
+    if (!isMatch) return res.status(400).json({ error: 'Invalid email/username or password.' });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.json({

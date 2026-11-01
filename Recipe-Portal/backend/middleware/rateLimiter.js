@@ -1,9 +1,9 @@
 const rateLimit = require('express-rate-limit');
 
-// Strict rate limiter for sensitive authentication routes
+// Rate limiter for sensitive authentication routes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // 10 attempts per window
+  max: 60, // 60 attempts per 15 minutes window
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
   message: {

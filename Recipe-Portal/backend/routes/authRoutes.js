@@ -110,8 +110,13 @@ router.post('/forgot-password', validate({ body: forgotPasswordSchema }), async 
 
     console.log('[Password Reset] Link:', resetLink);
 
+    let emailSent = false;
     try {
-      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      if (
+        process.env.EMAIL_USER &&
+        process.env.EMAIL_PASS &&
+        process.env.EMAIL_USER !== 'youraddress@gmail.com'
+      ) {
         await transporter.sendMail({
           from: `"Flavoriz" <${process.env.EMAIL_USER}>`,
           to: user.email,
@@ -119,12 +124,17 @@ router.post('/forgot-password', validate({ body: forgotPasswordSchema }), async 
           html: `<p>Click below to reset your password. This link expires in 1 hour.</p>
                  <p><a href="${resetLink}">${resetLink}</a></p>`,
         });
+        emailSent = true;
       }
     } catch (emailErr) {
       console.log('Email delivery skipped/failed:', emailErr.message);
     }
 
-    res.json({ message: 'If that email exists, a reset link has been sent.' });
+    res.json({
+      message: 'If that email exists, a reset link has been sent.',
+      // Provide direct link when email provider is not yet configured or fails
+      ...(!emailSent ? { resetLink } : {}),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

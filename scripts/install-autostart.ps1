@@ -1,6 +1,6 @@
 # scripts/install-autostart.ps1 - Configure auto-start on Windows login
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$vbsPath = Join-Path $projectRoot "start-server-hidden.vbs"
+$vbsPath = Join-Path $projectRoot "tooling\start-server-hidden.vbs"
 $startupDir = [Environment]::GetFolderPath('Startup')
 $shortcutPath = Join-Path $startupDir "Flavoriz-Backend.lnk"
 

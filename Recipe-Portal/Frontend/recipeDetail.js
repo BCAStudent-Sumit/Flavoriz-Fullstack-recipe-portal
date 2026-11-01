@@ -12,6 +12,11 @@ const recipeId = params.get('id');
 
 const ttsSupported = 'speechSynthesis' in window;
 
+let currentRecipe = null;
+let baseServings = 4;
+let currentServings = 4;
+let userRatingScore = 5;
+
 function skeletonMarkup() {
   return `
     <div class="skeleton-card" style="box-shadow:none;background:transparent">
@@ -37,6 +42,183 @@ function stateBox(container, emoji, title, msg, retry) {
   if (r && retry) r.addEventListener('click', retry);
 }
 
+// Parse and scale ingredient amounts (e.g., "1/2 cup sugar" -> "1 cup sugar")
+function scaleIngredient(line, factor) {
+  if (factor === 1) return line;
+
+  // Fraction pattern (e.g., 1/2, 3/4)
+  const fractionRegex = /^(\d+)\/(\d+)\s*(.*)$/;
+  // Mixed number pattern (e.g., 1 1/2)
+  const mixedRegex = /^(\d+)\s+(\d+)\/(\d+)\s*(.*)$/;
+  // Decimal or integer pattern (e.g., 2, 1.5, 0.25)
+  const numberRegex = /^(\d+(?:\.\d+)?)\s*(.*)$/;
+
+  const trimmed = line.trim();
+
+  const mixedMatch = trimmed.match(mixedRegex);
+  if (mixedMatch) {
+    const whole = parseFloat(mixedMatch[1]);
+    const num = parseFloat(mixedMatch[2]);
+    const den = parseFloat(mixedMatch[3]);
+    const val = (whole + num / den) * factor;
+    return `${formatQuantity(val)} ${mixedMatch[4]}`;
+  }
+
+  const fractionMatch = trimmed.match(fractionRegex);
+  if (fractionMatch) {
+    const num = parseFloat(fractionMatch[1]);
+    const den = parseFloat(fractionMatch[2]);
+    const val = (num / den) * factor;
+    return `${formatQuantity(val)} ${fractionMatch[3]}`;
+  }
+
+  const numMatch = trimmed.match(numberRegex);
+  if (numMatch) {
+    const val = parseFloat(numMatch[1]) * factor;
+    return `${formatQuantity(val)} ${numMatch[2]}`;
+  }
+
+  return line;
+}
+
+function formatQuantity(num) {
+  if (Math.abs(num - Math.round(num)) < 0.05) return Math.round(num);
+  // Convert standard decimals to friendly fractions
+  const rounded = Math.round(num * 4) / 4;
+  const whole = Math.floor(rounded);
+  const frac = rounded - whole;
+  if (frac === 0.25) return whole > 0 ? `${whole} ¼` : '¼';
+  if (frac === 0.5) return whole > 0 ? `${whole} ½` : '½';
+  if (frac === 0.75) return whole > 0 ? `${whole} ¾` : '¾';
+  return rounded.toFixed(1).replace(/\.0$/, '');
+}
+
+function renderIngredients() {
+  const listEl = document.getElementById('ingredientList');
+  if (!listEl || !currentRecipe) return;
+
+  const factor = currentServings / (baseServings || 1);
+  listEl.innerHTML = currentRecipe.ingredients.map((ing, i) => {
+    const scaled = scaleIngredient(ing, factor);
+    return `
+      <li class="ingredient-item" data-index="${i}">
+        <input type="checkbox" aria-label="Mark as ready">
+        <span>${scaled}</span>
+      </li>
+    `;
+  }).join('');
+
+  listEl.querySelectorAll('.ingredient-item').forEach(item => {
+    item.addEventListener('click', () => {
+      item.classList.toggle('checked');
+      const cb = item.querySelector('input[type="checkbox"]');
+      if (cb) cb.checked = item.classList.contains('checked');
+    });
+  });
+}
+
+function updateServings(newServings) {
+  if (newServings < 1 || newServings > 30) return;
+  currentServings = newServings;
+  const countEl = document.getElementById('servingsCount');
+  if (countEl) countEl.textContent = currentServings;
+  renderIngredients();
+}
+
+// Toggle Bookmark / Favorite
+async function toggleFavorite(btn) {
+  try {
+    const res = await fetch(`http://localhost:5000/api/recipes/${recipeId}/favorite`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    if (res.ok) {
+      btn.classList.toggle('active', data.isFavorite);
+      const countEl = btn.querySelector('.fav-count');
+      if (countEl) countEl.textContent = data.favoritesCount;
+      const textEl = btn.querySelector('.fav-text');
+      if (textEl) textEl.textContent = data.isFavorite ? 'Saved to Favorites' : 'Save to Favorites';
+    }
+  } catch (err) {
+    console.error('Error toggling favorite:', err);
+  }
+}
+
+// Submit a star rating & review
+async function submitReview() {
+  const reviewTextEl = document.getElementById('reviewText');
+  const reviewMsgEl = document.getElementById('reviewMsg');
+  const text = reviewTextEl ? reviewTextEl.value.trim() : '';
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/recipes/${recipeId}/reviews`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        rating: userRatingScore,
+        review: text,
+      }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      if (reviewMsgEl) {
+        reviewMsgEl.textContent = 'Thank you for your review!';
+        reviewMsgEl.style.color = 'green';
+      }
+      if (reviewTextEl) reviewTextEl.value = '';
+      currentRecipe.ratings = data.ratings;
+      currentRecipe.averageRating = data.averageRating;
+      currentRecipe.numReviews = data.numReviews;
+      renderReviewsList();
+      updateRatingHeaders();
+    } else {
+      if (reviewMsgEl) {
+        reviewMsgEl.textContent = data.error || 'Failed to submit review';
+        reviewMsgEl.style.color = 'red';
+      }
+    }
+  } catch (err) {
+    console.error('Submit review error:', err);
+  }
+}
+
+function updateRatingHeaders() {
+  const avgEl = document.getElementById('avgRatingNum');
+  const countEl = document.getElementById('reviewsCountNum');
+  const starsEl = document.getElementById('avgStarsDisplay');
+  if (avgEl) avgEl.textContent = currentRecipe.averageRating || '0.0';
+  if (countEl) countEl.textContent = `(${currentRecipe.numReviews || 0} reviews)`;
+  if (starsEl) starsEl.textContent = '★'.repeat(Math.round(currentRecipe.averageRating || 0)) + '☆'.repeat(5 - Math.round(currentRecipe.averageRating || 0));
+}
+
+function renderReviewsList() {
+  const container = document.getElementById('reviewsList');
+  if (!container || !currentRecipe) return;
+
+  const ratings = currentRecipe.ratings || [];
+  if (ratings.length === 0) {
+    container.innerHTML = '<p style="color: #64748b; font-style: italic;">No reviews yet. Be the first to rate this recipe!</p>';
+    return;
+  }
+
+  container.innerHTML = ratings.map(r => `
+    <div class="review-item">
+      <div class="review-header">
+        <span class="reviewer-name">${r.user?.username || 'Community Cook'}</span>
+        <span class="stars-display">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+      </div>
+      ${r.review ? `<p class="review-text">${r.review}</p>` : ''}
+    </div>
+  `).join('');
+}
+
 async function loadRecipe() {
   const container = document.getElementById('recipeContent');
 
@@ -56,14 +238,28 @@ async function loadRecipe() {
       return;
     }
 
+    currentRecipe = recipe;
+    baseServings = recipe.servings || 4;
+    currentServings = baseServings;
+
     const listenBtn = ttsSupported
       ? `<button id="listenBtn" class="listen-btn" type="button" aria-pressed="false">
            <span aria-hidden="true">🔊</span><span id="listenLabel">Listen to recipe</span>
          </button>` : '';
 
+    const dietaryTags = (recipe.dietary || []).map(d => `<span class="recipe-tag" style="background:#10b981">${d}</span>`).join(' ');
+
     container.innerHTML = `
       <a href="index.html" class="back-link">← Back to recipes</a>
-      ${listenBtn}
+
+      <div class="recipe-actions-bar">
+        ${listenBtn}
+        <button id="favoriteBtn" class="btn-favorite" type="button">
+          <span>❤️</span>
+          <span class="fav-text">Save to Favorites</span>
+          <span class="fav-count" style="font-weight:700">(${recipe.favoritesCount || 0})</span>
+        </button>
+      </div>
 
       <div class="recipe-hero">
         <img src="${getImageUrl(recipe.image)}" alt="${recipe.title}">
@@ -71,6 +267,8 @@ async function loadRecipe() {
 
       <div class="recipe-tags">
         <span class="recipe-tag">${recipe.cuisine || 'General'}</span>
+        ${recipe.difficulty ? `<span class="recipe-tag" style="background:#6366f1">${recipe.difficulty}</span>` : ''}
+        ${dietaryTags}
       </div>
 
       <h1 class="recipe-title">${recipe.title}</h1>
@@ -80,10 +278,15 @@ async function loadRecipe() {
         ${recipe.author?._id
           ? `<span>By <a class="author-link" href="profile.html?id=${recipe.author._id}">${recipe.author.username || 'Unknown'}</a></span>`
           : `<span>By ${recipe.author?.username || 'Unknown'}</span>`}
+        <span style="margin-left:auto; display:flex; align-items:center; gap:0.3rem">
+          <span style="color:#f59e0b">★</span>
+          <strong id="avgRatingNum">${recipe.averageRating || '0.0'}</strong>
+          <span id="reviewsCountNum" style="color:#64748b; font-size:0.85rem">(${recipe.numReviews || 0} reviews)</span>
+        </span>
       </div>
 
       <div class="info-box">
-        <h3>Recipe Time &amp; More</h3>
+        <h3>Recipe Time &amp; Details</h3>
         <div class="stats-grid">
           <div class="stat-box">
             <div class="stat-icon" aria-hidden="true">⏱️</div>
@@ -96,23 +299,26 @@ async function loadRecipe() {
             <div class="stat-value">${recipe.cookTime || '-'}</div>
           </div>
           <div class="stat-box">
-            <div class="stat-icon" aria-hidden="true">🍽️</div>
-            <div class="stat-label">Serves</div>
-            <div class="stat-value">${recipe.servings || '-'}</div>
+            <div class="stat-icon" aria-hidden="true">🔥</div>
+            <div class="stat-label">Calories</div>
+            <div class="stat-value">${recipe.calories ? `${recipe.calories} kcal` : '-'}</div>
           </div>
         </div>
       </div>
 
       <div class="info-box">
-        <h3>Ingredients</h3>
-        <ul class="ingredient-list" id="ingredientList">
-          ${recipe.ingredients.map((ing, i) => `
-            <li class="ingredient-item" data-index="${i}">
-              <input type="checkbox" aria-label="Mark ${ing} as ready">
-              <span>${ing}</span>
-            </li>
-          `).join('')}
-        </ul>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem">
+          <h3 style="margin-bottom:0">Ingredients</h3>
+          <!-- Dynamic Portion Scaler -->
+          <div class="portion-scaler" title="Scale recipe measurements by servings">
+            <span class="label">Servings:</span>
+            <button class="scaler-btn" id="btnScaleDown" type="button" aria-label="Decrease servings">-</button>
+            <span class="scaler-count" id="servingsCount">${currentServings}</span>
+            <button class="scaler-btn" id="btnScaleUp" type="button" aria-label="Increase servings">+</button>
+          </div>
+        </div>
+
+        <ul class="ingredient-list" id="ingredientList"></ul>
       </div>
 
       <div class="info-box">
@@ -124,18 +330,67 @@ async function loadRecipe() {
           </div>
         `).join('')}
       </div>
+
+      <!-- Community Reviews Section -->
+      <div class="info-box reviews-section">
+        <div class="rating-summary-header">
+          <div>
+            <h3>Community Reviews &amp; Ratings</h3>
+            <span class="stars-display" id="avgStarsDisplay"></span>
+          </div>
+        </div>
+
+        <!-- Add Review Form -->
+        <div class="add-review-card">
+          <h4 style="margin-bottom:0.4rem; color:var(--secondary-color)">Rate this Recipe</h4>
+          <div class="star-picker" id="starPicker">
+            <button class="star-pick-btn active" data-val="1" type="button">★</button>
+            <button class="star-pick-btn active" data-val="2" type="button">★</button>
+            <button class="star-pick-btn active" data-val="3" type="button">★</button>
+            <button class="star-pick-btn active" data-val="4" type="button">★</button>
+            <button class="star-pick-btn active" data-val="5" type="button">★</button>
+          </div>
+          <textarea id="reviewText" class="review-textarea" placeholder="Share your experience, cooking tips, or tweaks..."></textarea>
+          <div style="display:flex; justify-content:space-between; align-items:center">
+            <button id="btnSubmitReview" class="btn-submit-review" type="button">Post Review</button>
+            <span id="reviewMsg" style="font-size:0.9rem"></span>
+          </div>
+        </div>
+
+        <div class="reviews-list" id="reviewsList"></div>
+      </div>
     `;
 
-    // Make ingredient checkboxes toggle a strikethrough on click
-    document.querySelectorAll('.ingredient-item').forEach(item => {
-      item.addEventListener('click', () => {
-        item.classList.toggle('checked');
-        const checkbox = item.querySelector('input[type="checkbox"]');
-        checkbox.checked = item.classList.contains('checked');
+    renderIngredients();
+    renderReviewsList();
+    updateRatingHeaders();
+
+    // Setup Scaler Event Listeners
+    const btnDown = document.getElementById('btnScaleDown');
+    const btnUp = document.getElementById('btnScaleUp');
+    if (btnDown) btnDown.addEventListener('click', () => updateServings(currentServings - 1));
+    if (btnUp) btnUp.addEventListener('click', () => updateServings(currentServings + 1));
+
+    // Setup Favorite Toggle
+    const favBtn = document.getElementById('favoriteBtn');
+    if (favBtn) favBtn.addEventListener('click', () => toggleFavorite(favBtn));
+
+    // Setup Star Rating Picker
+    const starBtns = document.querySelectorAll('.star-pick-btn');
+    starBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        userRatingScore = parseInt(btn.getAttribute('data-val'));
+        starBtns.forEach(b => {
+          const val = parseInt(b.getAttribute('data-val'));
+          b.classList.toggle('active', val <= userRatingScore);
+        });
       });
     });
 
-    // ----- Read the recipe aloud (voice assistant) -----
+    const submitReviewBtn = document.getElementById('btnSubmitReview');
+    if (submitReviewBtn) submitReviewBtn.addEventListener('click', submitReview);
+
+    // Setup Text-to-Speech
     if (ttsSupported) setupListen(recipe);
 
   } catch (err) {
@@ -155,9 +410,6 @@ function setupListen(recipe) {
   if (recipe.cookTime) timing.push(`cook ${recipe.cookTime}`);
   if (recipe.servings) timing.push(`serves ${recipe.servings}`);
 
-  // Split the narration into small chunks so playback can start after
-  // translating just the short intro line, while the (longer) ingredients
-  // and instructions translate in the background in parallel.
   function buildSegments() {
     const intro = [
       `${recipe.title}.`,
@@ -177,11 +429,6 @@ function setupListen(recipe) {
     label.textContent = on ? 'Stop reading' : 'Listen to recipe';
   }
 
-  // Plays a list of text segments back-to-back in the given language.
-  // All segments start translating immediately in parallel (not one at a
-  // time), so later segments are usually ready well before playback
-  // reaches them — only the first (short) segment's translation time is
-  // actually felt as a delay.
   function playSegments(segments, lang, isEnglish, callbacks) {
     const translated = segments.map(seg =>
       isEnglish ? Promise.resolve(seg) : window.FlavorizAssistant.translate(seg, lang)
@@ -200,7 +447,7 @@ function setupListen(recipe) {
           window.FlavorizAssistant.speak(text, lang, {
             onstart: mySeq === 0 ? callbacks.onstart : undefined,
             onend: () => { index++; playNext(); },
-            onerror: () => { index++; playNext(); } // skip a broken segment rather than stalling
+            onerror: () => { index++; playNext(); }
           });
         })
         .catch(() => { index++; playNext(); });
@@ -213,7 +460,6 @@ function setupListen(recipe) {
   let activePlayer = null;
 
   btn.addEventListener('click', () => {
-    // Currently speaking -> stop
     if (btn.classList.contains('speaking')) {
       if (activePlayer) activePlayer.stop();
       if (window.FlavorizAssistant) window.FlavorizAssistant.stopSpeaking();
@@ -222,7 +468,6 @@ function setupListen(recipe) {
       return;
     }
 
-    // Stop anything else (chat replies, a previous read) before starting
     if (window.FlavorizAssistant) window.FlavorizAssistant.stopSpeaking();
     else window.speechSynthesis.cancel();
 
@@ -239,7 +484,6 @@ function setupListen(recipe) {
         onerror: () => setState(false)
       });
     } else {
-      // Fallback if assistant.js didn't load for some reason — English only
       const narration = buildSegments().join(' ');
       const u = new SpeechSynthesisUtterance(narration);
       u.lang = 'en-US'; u.rate = 1; u.pitch = 1;
@@ -250,7 +494,6 @@ function setupListen(recipe) {
     }
   });
 
-  // Stop narration if the user leaves the page
   window.addEventListener('beforeunload', () => {
     if (activePlayer) activePlayer.stop();
     if (window.FlavorizAssistant) window.FlavorizAssistant.stopSpeaking();

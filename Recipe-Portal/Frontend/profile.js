@@ -522,3 +522,69 @@ async function toggleFollow(targetId) {
   wireStat(followersCell, 'followers');
   wireStat(followingCell, 'following');
 })();
+
+// Profile Tabs: My Recipes vs. Saved Favorites
+(function initProfileTabs() {
+  const tabMyRecipes = document.getElementById('tabMyRecipes');
+  const tabFavorites = document.getElementById('tabFavorites');
+  const container = document.getElementById('profileRecipes');
+
+  if (!tabMyRecipes || !tabFavorites || !container) return;
+
+  function setActiveTab(activeBtn, inactiveBtn) {
+    activeBtn.style.color = 'var(--primary-color)';
+    activeBtn.style.borderBottom = '2px solid var(--primary-color)';
+    inactiveBtn.style.color = '#64748b';
+    inactiveBtn.style.borderBottom = 'none';
+  }
+
+  tabMyRecipes.addEventListener('click', () => {
+    setActiveTab(tabMyRecipes, tabFavorites);
+    loadProfile();
+  });
+
+  tabFavorites.addEventListener('click', async () => {
+    setActiveTab(tabFavorites, tabMyRecipes);
+    container.innerHTML = '<p class="loading-pulse" style="text-align:center; padding:3rem; grid-column:1/-1;">Loading saved recipes...</p>';
+
+    try {
+      const res = await fetch('http://localhost:5000/api/recipes/favorites/my-favorites', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const favorites = await res.json();
+
+      if (!res.ok) throw new Error('Failed to load favorites');
+
+      if (!favorites || favorites.length === 0) {
+        container.innerHTML = `
+          <div class="state-box" style="grid-column: 1 / -1;">
+            <span class="state-emoji">❤️</span>
+            <h3>No saved recipes yet</h3>
+            <p>Save recipes to your personal cookbook by tapping the heart icon on any recipe!</p>
+            <a class="btn-retry" href="index.html">Discover Recipes</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = favorites.map((r, i) => `
+        <div class="recipe-card" style="animation-delay: ${i * 0.05}s">
+          <img src="${getImageUrl(r.image)}" alt="${r.title}" onclick="window.location.href='recipe-detail.html?id=${r._id}'">
+          <div class="recipe-card-body">
+            <h4 onclick="window.location.href='recipe-detail.html?id=${r._id}'">${r.title}</h4>
+            <p>${r.cuisine || 'General'}</p>
+            <div style="font-size:0.85rem; color:#f59e0b; margin-top:0.4rem;">★ ${r.averageRating || '0.0'} (${r.numReviews || 0} reviews)</div>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `
+        <div class="state-box" style="grid-column: 1 / -1;">
+          <span class="state-emoji">📡</span>
+          <h3>Couldn't load saved favorites</h3>
+          <p>Please check your connection and try again.</p>
+        </div>
+      `;
+    }
+  });
+})();

@@ -1,8 +1,11 @@
 // routes/ai.js
-console.log('>>> ai.js loaded from:', __filename);
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth'); // your existing JWT middleware
+const auth = require('../middleware/auth');
+const { aiLimiter } = require('../middleware/rateLimiter');
+
+// Rate limit AI generation endpoints
+router.use(aiLimiter);
 
 router.post('/generate-recipe', auth, async (req, res) => {
   const { title } = req.body;
@@ -26,7 +29,7 @@ router.post('/generate-recipe', auth, async (req, res) => {
             }]
           }],
           generationConfig: {
-            responseMimeType: 'application/json' // forces Gemini to return valid JSON, no markdown fences
+            responseMimeType: 'application/json'
           }
         })
       }
@@ -49,8 +52,7 @@ router.post('/generate-recipe', auth, async (req, res) => {
   }
 });
 
-// Translates arbitrary text into the requested language, used by the
-// frontend to speak bot replies in the user's chosen voice language.
+// Translates arbitrary text into requested language
 router.post('/translate', auth, async (req, res) => {
   const { text, targetLangName } = req.body;
   if (!text || !text.trim()) {

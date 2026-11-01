@@ -1,6 +1,6 @@
 # scripts/create-desktop-shortcut.ps1 - Create Desktop icon for 1-click launch
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$batPath = Join-Path $projectRoot "Start-Flavoriz.bat"
+$batPath = Join-Path $projectRoot "tooling\Start-Flavoriz.bat"
 $desktopDir = [Environment]::GetFolderPath('Desktop')
 $shortcutPath = Join-Path $desktopDir "Flavoriz Recipe Portal.lnk"
 

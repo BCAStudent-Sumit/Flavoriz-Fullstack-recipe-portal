@@ -1,7 +1,8 @@
 Set WshShell = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.FileSystemObject")
-scriptDir = fso.GetParentFolderName(WScript.ScriptFullName)
-backendDir = scriptDir & "\Recipe-Portal\backend"
+toolingDir = fso.GetParentFolderName(WScript.ScriptFullName)
+projectRoot = fso.GetParentFolderName(toolingDir)
+backendDir = projectRoot & "\Recipe-Portal\backend"
 
 ' Check if port 5000 is already active
 Set oExec = WshShell.Exec("netstat -ano")
@@ -16,5 +17,5 @@ Loop
 
 If Not alreadyRunning Then
     WshShell.CurrentDirectory = backendDir
-    WshShell.Run "cmd /c node server.js", 0, False
+    WshShell.Run "node server.js", 0, False
 End If

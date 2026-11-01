@@ -1,34 +1,40 @@
 const router = require('express').Router();
-const User = require('../models/User');
+const User = require('../models/user');
 const auth = require('../middleware/auth');
-const upload = require('../middleware/upload');
+const { upload, optimizeAndStore } = require('../middleware/upload');
 
-// NEW - search people by username or display name (for the navbar search box).
-// IMPORTANT: this must stay ABOVE `GET /:id`, otherwise Express treats
-// "search" as an :id and this route never runs.
+// Search people by username or display name
 router.get('/search', async (req, res) => {
   try {
     const q = (req.query.q || '').trim();
     if (!q) return res.json([]);
-    // Escape regex special chars so a typed "." or "(" is matched literally,
-    // not interpreted as a pattern (a bare "." would otherwise match everyone).
+
     const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const rx = new RegExp(safe, 'i');
     const users = await User.find({ $or: [{ username: rx }, { name: rx }] })
       .select('username name profilePic')
-      .limit(10);
+      .limit(10)
+      .lean();
     res.json(users);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
+// Get user profile by ID
 router.get('/:id', async (req, res) => {
-  const user = await User.findById(req.params.id).select('-password');
-  res.json(user);
+  try {
+    const user = await User.findById(req.params.id)
+      .select('-password -resetPasswordToken -resetPasswordExpires')
+      .lean();
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ error: 'Invalid user ID' });
+  }
 });
 
-// NEW - edit your own profile (display name, username, bio)
+// Edit personal profile (display name, username, bio)
 router.put('/me', auth, async (req, res) => {
   try {
     const { name, bio, username } = req.body || {};
@@ -43,15 +49,16 @@ router.put('/me', auth, async (req, res) => {
         return res.status(400).json({ error: 'Username must be 3–30 characters.' });
       if (!/^[a-zA-Z0-9._]+$/.test(u))
         return res.status(400).json({ error: 'Username can only use letters, numbers, dots and underscores.' });
-      // must be unique across everyone except yourself
-      const taken = await User.findOne({ username: u, _id: { $ne: req.userId } }).select('_id');
+
+      // Unique username check
+      const taken = await User.findOne({ username: u, _id: { $ne: req.userId } }).select('_id').lean();
       if (taken) return res.status(409).json({ error: 'That username is already taken.' });
       update.username = u;
     }
 
     const user = await User.findByIdAndUpdate(
       req.userId, update, { new: true, runValidators: true }
-    ).select('-password');
+    ).select('-password').lean();
 
     res.json(user);
   } catch (err) {
@@ -59,17 +66,17 @@ router.put('/me', auth, async (req, res) => {
   }
 });
 
-// NEW - upload profile picture
-router.post('/upload-avatar', auth, upload.single('avatar'), async (req, res) => {
+// Upload profile picture with Sharp compression and Cloudinary support
+router.post('/upload-avatar', auth, upload.single('avatar'), optimizeAndStore, async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-    const imagePath = `/uploads/${req.file.filename}`;
+    const imagePath = req.file.location || req.file.path;
     const user = await User.findByIdAndUpdate(
       req.userId,
       { profilePic: imagePath },
       { new: true }
-    ).select('-password');
+    ).select('-password').lean();
 
     res.json(user);
   } catch (err) {
@@ -77,8 +84,7 @@ router.post('/upload-avatar', auth, upload.single('avatar'), async (req, res) =>
   }
 });
 
-// NEW - follow / unfollow toggle
-// If you already follow this user, this unfollows; otherwise it follows.
+// Follow / Unfollow toggle
 router.post('/:id/follow', auth, async (req, res) => {
   try {
     if (req.params.id === req.userId)
@@ -93,7 +99,6 @@ router.post('/:id/follow', auth, async (req, res) => {
     );
 
     if (alreadyFollowing) {
-      // unfollow
       targetUser.followers = targetUser.followers.filter(
         (id) => id.toString() !== req.userId
       );
@@ -101,7 +106,6 @@ router.post('/:id/follow', auth, async (req, res) => {
         (id) => id.toString() !== req.params.id
       );
     } else {
-      // follow
       targetUser.followers.push(currentUser._id);
       currentUser.following.push(targetUser._id);
     }
@@ -110,20 +114,21 @@ router.post('/:id/follow', auth, async (req, res) => {
     await currentUser.save();
 
     res.json({
-      following: !alreadyFollowing,                 // your new state toward this user
-      followersCount: targetUser.followers.length,  // this profile's follower count
-      followingCount: targetUser.following.length,  // this profile's following count
+      following: !alreadyFollowing,
+      followersCount: targetUser.followers.length,
+      followingCount: targetUser.following.length,
     });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
-// NEW - people who follow this user (for the Followers popup)
+// Followers list
 router.get('/:id/followers', async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
-      .populate('followers', 'username name profilePic');
+      .populate('followers', 'username name profilePic')
+      .lean();
     if (!user) return res.status(404).json({ error: 'User not found.' });
     res.json(user.followers);
   } catch (err) {
@@ -131,11 +136,12 @@ router.get('/:id/followers', async (req, res) => {
   }
 });
 
-// NEW - people this user follows (for the Following popup)
+// Following list
 router.get('/:id/following', async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
-      .populate('following', 'username name profilePic');
+      .populate('following', 'username name profilePic')
+      .lean();
     if (!user) return res.status(404).json({ error: 'User not found.' });
     res.json(user.following);
   } catch (err) {

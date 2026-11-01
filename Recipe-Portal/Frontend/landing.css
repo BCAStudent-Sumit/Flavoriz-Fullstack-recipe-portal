@@ -54,11 +54,12 @@ body {
 .nav-auth {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.2rem;
+  margin-left: auto;
 }
 
 .btn-login-outline {
-  padding: 0.6rem 1.6rem;
+  padding: 0.55rem 1.45rem;
   border: 1.5px solid var(--brand-teal);
   border-radius: 99px;
   color: var(--brand-teal);
@@ -66,22 +67,39 @@ body {
   font-weight: 600;
   font-size: 0.95rem;
   backdrop-filter: blur(8px);
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .btn-login-outline:hover {
   background: var(--brand-teal);
   color: #fff;
+  transform: translateY(-1px);
 }
 
 .btn-signup {
-  color: var(--brand-orange);
+  padding: 0.55rem 1.45rem;
+  background: var(--brand-orange, #ff6a41);
+  border: 1.5px solid var(--brand-orange, #ff6a41);
+  border-radius: 99px;
+  color: #fff;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
-  transition: color 0.3s ease;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(255, 106, 65, 0.28);
 }
 .btn-signup:hover {
-  text-decoration: underline;
+  background: #ff835f;
+  border-color: #ff835f;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 106, 65, 0.45);
+  text-decoration: none;
 }
 
 /* Hero Section */

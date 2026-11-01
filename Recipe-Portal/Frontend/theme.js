@@ -72,14 +72,19 @@
       setTheme(current() === 'dark' ? 'light' : 'dark');
     });
 
-    // Mount inside navbar beside Logout instead of floating over cards
+    // Mount inside navbar beside Logout/Nav-auth instead of floating over cards
     var navLinks = document.querySelector('.nav-links');
+    var navAuth = document.querySelector('.nav-auth');
     var logoutBtn = document.getElementById('logoutBtn');
+
     if (navLinks && logoutBtn) {
       navLinks.insertBefore(btn, logoutBtn);
       btn.classList.add('in-navbar');
     } else if (navLinks) {
       navLinks.appendChild(btn);
+      btn.classList.add('in-navbar');
+    } else if (navAuth) {
+      navAuth.appendChild(btn);
       btn.classList.add('in-navbar');
     } else {
       var nav = document.querySelector('.navbar');

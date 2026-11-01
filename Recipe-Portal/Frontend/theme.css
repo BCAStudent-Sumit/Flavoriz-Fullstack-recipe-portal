@@ -102,6 +102,19 @@ body { background: var(--bg-color); color: var(--text); }
   padding: 0.85rem 2rem;
   gap: 1.25rem;
 }
+.navbar.landing-nav {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 1.5rem 5% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.navbar.landing-nav .nav-auth {
+  margin-left: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 1.25rem !important;
+}
 .nav-links {
   display: flex;
   align-items: center;

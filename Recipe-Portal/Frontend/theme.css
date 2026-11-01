@@ -726,3 +726,64 @@ select:focus-visible,
 @media (max-width: 768px) {
   .nav-search { width: 100%; }
 }
+
+
+/* ---------- Feed Search & Controls (Theme Aware) ---------- */
+.feed-search-box input {
+  background: var(--input-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.feed-search-box input:focus {
+  background: var(--input-bg-focus) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px var(--ring) !important;
+}
+
+.feed-search-box input::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 0.85;
+}
+
+.feed-search-icon {
+  color: var(--text-muted) !important;
+}
+
+.filter-select {
+  background: var(--input-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.filter-select:focus {
+  border-color: var(--primary-color) !important;
+  background: var(--input-bg-focus) !important;
+}
+
+.filter-select option {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+.modal-card {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.modal-close {
+  color: var(--text-muted) !important;
+}
+
+.pantry-input {
+  background: var(--input-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.pantry-tag {
+  background: var(--surface-2) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}

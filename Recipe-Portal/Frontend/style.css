@@ -687,3 +687,10 @@ main {
 .recipe-grid {
   padding-bottom: 5rem !important;
 }
+
+/* Fallback theme support for search inputs */
+.feed-search-box input {
+  color: var(--text, #1a1a1a);
+  background: var(--input-bg, #f1ede4);
+  border: 1px solid var(--border, #cbd5e1);
+}

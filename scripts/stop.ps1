@@ -6,13 +6,15 @@ Write-Host "       Stopping Flavoriz Backend        " -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
-$connections = Get-NetTCPConnection -LocalPort 5000 -State Listen -ErrorAction SilentlyContinue
+$connections = Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue
 
 if ($connections) {
     $pids = $connections | Select-Object -ExpandProperty OwningProcess -Unique
     foreach ($p in $pids) {
-        Write-Host "[...] Stopping process PID $p on port 5000..." -ForegroundColor Yellow
-        Stop-Process -Id $p -Force -ErrorAction SilentlyContinue
+        if ($p -and $p -gt 0) {
+            Write-Host "[...] Stopping process PID $p on port 5000..." -ForegroundColor Yellow
+            Stop-Process -Id $p -Force -ErrorAction SilentlyContinue
+        }
     }
     Write-Host "[OK] Flavoriz backend server stopped successfully." -ForegroundColor Green
 } else {
@@ -20,4 +22,4 @@ if ($connections) {
 }
 
 Write-Host ""
-Start-Sleep -Seconds 2
+Start-Sleep -Seconds 1

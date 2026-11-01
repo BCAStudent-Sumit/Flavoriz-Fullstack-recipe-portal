@@ -63,13 +63,8 @@
     <h1 class="heading-duo" id="feedHeading">Discover <span>Recipes</span></h1>
     <a href="index.html" id="clearFilter" class="clear-filter-link" style="display:none;">✕ Clear filters</a>
 
-    <!-- Multi-faceted Feed Controls -->
-    <div class="feed-controls">
-      <div class="feed-search-box">
-        <span class="feed-search-icon">🔍</span>
-        <input type="search" id="feedSearchInput" placeholder="Search recipe titles, ingredients, cuisines..." autocomplete="off">
-      </div>
-
+    <!-- Feed Filters Toolbar -->
+    <div class="feed-controls" style="justify-content: flex-end;">
       <div class="filter-group">
         <select id="dietaryFilter" class="filter-select">
           <option value="">🌱 All Diets</option>
@@ -131,6 +126,7 @@
   </div>
 
   <script src="recipes.js"></script>
+  <script src="omnibox.js"></script>
   <script src="dropdown.js"></script>
   <script src="transitions.js"></script>
   <script src="assistant.js"></script>

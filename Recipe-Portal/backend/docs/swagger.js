@@ -208,6 +208,20 @@ const swaggerDocument = {
         },
       },
     },
+    '/api/recipes/omnibox': {
+      get: {
+        tags: ['Search & Omnibox'],
+        summary: 'Unified Global Omnibox search across recipes, chefs, and tags',
+        parameters: [
+          { name: 'q', in: 'query', required: true, description: 'Search term', schema: { type: 'string' } },
+        ],
+        responses: {
+          200: {
+            description: 'Partitioned search results matching query.',
+          },
+        },
+      },
+    },
     '/api/recipes/{id}': {
       get: {
         tags: ['Recipes'],

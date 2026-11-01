@@ -204,6 +204,75 @@ router.get('/user/:userId', async (req, res) => {
 });
 
 /**
+ * GET /api/recipes/omnibox
+ * Unified Global Omnibox search endpoint: returns partitioned matches
+ * for Recipes, Chefs/Creators, and Cuisines/Tags.
+ */
+router.get('/omnibox', async (req, res) => {
+  try {
+    const q = (req.query.q || '').trim();
+    if (!q) {
+      return res.json({ query: '', recipes: [], chefs: [], tags: [] });
+    }
+
+    const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const rx = new RegExp(safe, 'i');
+
+    // 1. Search Recipes (title, cuisine, ingredients)
+    const recipes = await Recipe.find({
+      $or: [{ title: rx }, { cuisine: rx }, { ingredients: rx }],
+    })
+      .select('title cuisine image averageRating')
+      .populate('author', 'username name')
+      .limit(5)
+      .lean();
+
+    // 2. Search Chefs / Creators
+    const chefs = await User.find({
+      $or: [{ username: rx }, { name: rx }],
+    })
+      .select('username name profilePic')
+      .limit(4)
+      .lean();
+
+    // 3. Search Cuisines & Dietary Tags
+    const allKnownTags = [
+      { name: 'Italian', type: 'cuisine' },
+      { name: 'Mexican', type: 'cuisine' },
+      { name: 'Indian', type: 'cuisine' },
+      { name: 'American', type: 'cuisine' },
+      { name: 'Chinese', type: 'cuisine' },
+      { name: 'Continental', type: 'cuisine' },
+      { name: 'Breakfast', type: 'cuisine' },
+      { name: 'Lunch', type: 'cuisine' },
+      { name: 'Dinner', type: 'cuisine' },
+      { name: 'Desserts', type: 'cuisine' },
+      { name: 'Beverages', type: 'cuisine' },
+      { name: 'Snacks', type: 'cuisine' },
+      { name: 'Vegetarian', type: 'dietary' },
+      { name: 'Vegan', type: 'dietary' },
+      { name: 'Gluten-Free', type: 'dietary' },
+      { name: 'Keto', type: 'dietary' },
+      { name: 'Low-Carb', type: 'dietary' },
+      { name: 'Dairy-Free', type: 'dietary' },
+    ];
+
+    const tags = allKnownTags
+      .filter(t => rx.test(t.name))
+      .slice(0, 4);
+
+    res.json({
+      query: q,
+      recipes,
+      chefs,
+      tags,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
  * GET /api/recipes/:id
  * Fetch single recipe by ID
  */

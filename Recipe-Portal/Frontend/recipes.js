@@ -96,9 +96,16 @@ async function loadRecipes(append = false) {
   const params = new URLSearchParams(window.location.search);
   const cuisine = params.get('cuisine');
   const queryDietary = params.get('dietary');
+  const querySearch = params.get('search');
+
+  if (querySearch) {
+    activeSearchQuery = querySearch;
+  }
 
   if (headingEl) {
-    if (cuisine) {
+    if (querySearch) {
+      headingEl.innerHTML = `Search: <span>"${querySearch}"</span>`;
+    } else if (cuisine) {
       headingEl.innerHTML = `${cuisine} <span>Recipes</span>`;
     } else if (queryDietary) {
       headingEl.innerHTML = `${queryDietary} <span>Recipes</span>`;
@@ -109,7 +116,7 @@ async function loadRecipes(append = false) {
 
   const clearFilterEl = document.getElementById('clearFilter');
   if (clearFilterEl) {
-    clearFilterEl.style.display = (cuisine || queryDietary || activeSearchQuery || activeDietary || activeDifficulty) ? 'inline-block' : 'none';
+    clearFilterEl.style.display = (cuisine || queryDietary || querySearch || activeSearchQuery || activeDietary || activeDifficulty) ? 'inline-block' : 'none';
   }
 
   if (!append) {
@@ -206,25 +213,11 @@ async function deleteRecipe(id) {
   }
 }
 
-// Hook up Search & Filters
+// Hook up Filters Toolbar
 function initFeedFilters() {
-  const searchInput = document.getElementById('feedSearchInput');
   const dietarySelect = document.getElementById('dietaryFilter');
   const diffSelect = document.getElementById('difficultyFilter');
   const sortSelect = document.getElementById('sortFilter');
-
-  let debounceTimer = null;
-
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        activeSearchQuery = searchInput.value.trim();
-        currentPage = 1;
-        loadRecipes(false);
-      }, 350);
-    });
-  }
 
   if (dietarySelect) {
     dietarySelect.addEventListener('change', () => {
@@ -367,90 +360,3 @@ if (logoutBtn) {
 initFeedFilters();
 initPantryFinder();
 loadRecipes(false);
-
-/* ============================================================
-   Navbar people search (Instagram-style)
-   ============================================================ */
-(function initUserSearch() {
-  const navbar   = document.querySelector('.navbar');
-  const navLinks = document.querySelector('.nav-links');
-  if (!navbar) return;
-
-  const esc = (s) => String(s == null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  const avatarUrl = (u) => (u && u.profilePic)
-    ? `http://localhost:5000${u.profilePic}`
-    : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent((u && u.username) || 'User')}`;
-
-  const wrap = document.createElement('div');
-  wrap.className = 'nav-search';
-  wrap.innerHTML = `
-    <span class="nav-search-icon" aria-hidden="true">🔍</span>
-    <input id="userSearchInput" class="nav-search-input" type="search"
-           placeholder="Search people…" autocomplete="off" aria-label="Search people"
-           role="combobox" aria-expanded="false" aria-controls="userSearchResults">
-    <div id="userSearchResults" class="nav-search-results" role="listbox" hidden></div>`;
-  if (navLinks) navbar.insertBefore(wrap, navLinks);
-  else navbar.appendChild(wrap);
-
-  const input   = wrap.querySelector('#userSearchInput');
-  const results = wrap.querySelector('#userSearchResults');
-
-  const openList  = () => { results.hidden = false; input.setAttribute('aria-expanded', 'true'); };
-  const closeList = () => { results.hidden = true;  input.setAttribute('aria-expanded', 'false'); };
-
-  function render(people) {
-    if (!Array.isArray(people) || people.length === 0) {
-      results.innerHTML = `<p class="nav-search-empty">No people found.</p>`;
-      openList();
-      return;
-    }
-    results.innerHTML = people.map((u) => `
-      <a class="nav-search-item" role="option" href="profile.html?id=${u._id}">
-        <img class="nav-search-avatar" src="${avatarUrl(u)}" alt="">
-        <span class="nav-search-names">
-          <span class="nav-search-name">${esc(u.name || u.username)}</span>
-          <span class="nav-search-handle">@${esc(u.username || '')}</span>
-        </span>
-      </a>`).join('');
-    openList();
-  }
-
-  let timer = null;
-  let lastQuery = '';
-  async function runSearch(q) {
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/users/search?q=${encodeURIComponent(q)}`,
-        { headers: { 'Authorization': `Bearer ${token}` } }
-      );
-      const people = await res.json();
-      if (q !== lastQuery) return;
-      if (!res.ok) throw new Error('search');
-      render(people);
-    } catch (err) {
-      results.innerHTML = `<p class="nav-search-empty">Search is unavailable. Is the server running?</p>`;
-      openList();
-    }
-  }
-
-  input.addEventListener('input', () => {
-    const q = input.value.trim();
-    lastQuery = q;
-    clearTimeout(timer);
-    if (q.length < 1) { closeList(); results.innerHTML = ''; return; }
-    timer = setTimeout(() => runSearch(q), 250);
-  });
-
-  input.addEventListener('focus', () => {
-    if (input.value.trim() && results.innerHTML.trim()) openList();
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!wrap.contains(e.target)) closeList();
-  });
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeList(); input.blur(); }
-  });
-})();

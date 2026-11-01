@@ -447,7 +447,7 @@ body {
   text-decoration: none;
   font-size: 0.9rem;
   margin-bottom: 1rem;
-  padding-left: 40px; /* shifts it right - adjust this number to taste */
+  /* centered */
 }
 .clear-filter-link:hover {
   text-decoration: underline;
@@ -498,7 +498,7 @@ body {
   flex-wrap: wrap;
   gap: 0.8rem;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 .feed-search-box {
   flex: 1 1 300px;
@@ -532,6 +532,7 @@ body {
   flex-wrap: wrap;
   gap: 0.6rem;
   align-items: center;
+  justify-content: center;
 }
 .filter-select {
   padding: 0.6rem 1rem;

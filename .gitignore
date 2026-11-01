@@ -22,3 +22,9 @@ Thumbs.db
 desktop.ini
 .DS_Store
 *.lnk
+
+# Root convenience scripts (canonical versions are in tooling/ and scripts/)
+/Start-Flavoriz.bat
+/Stop-Flavoriz.bat
+/start-server-hidden.vbs
+
